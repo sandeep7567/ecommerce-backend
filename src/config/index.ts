@@ -32,3 +32,5 @@ export const Config = {
     PRIVATE_KEY,
     ORIGIN_URI,
 };
+
+Object.freeze(Config);
