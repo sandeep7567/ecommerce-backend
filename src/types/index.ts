@@ -34,6 +34,10 @@ export interface RefreshTokenI {
     expiresAt: Date;
 }
 
+export interface RefreshTokenPayload {
+    id: string;
+}
+
 export type CreateUserT = Pick<
     UserI,
     "firstName" | "lastName" | "email" | "password" | "role"
@@ -41,6 +45,11 @@ export type CreateUserT = Pick<
 
 export interface CreateUserIRequest extends Request {
     body: CreateUserT;
+}
+
+export interface AuthCookie {
+    accessToken: string;
+    refreshToken: string;
 }
 
 export interface AuthPayload extends JwtPayload {
