@@ -11,6 +11,8 @@ import logger from "../config/logger";
 import { asyncHandler } from "../middlewares/asyncHandler";
 import loginValidator from "../validators/loginValidator";
 import authenticator from "../middlewares/authenticator";
+import validateRefreshToken from "../middlewares/validateRefreshToken";
+import parseRefreshToken from "../middlewares/parseRefreshToken";
 
 const router = express.Router();
 
@@ -34,6 +36,17 @@ router.post("/login", loginValidator, asyncHandler(authController.login));
 
 router.get("/self", authenticator, asyncHandler(authController.self));
 
-router.get("/refresh", authenticator, asyncHandler(authController.refresh));
+router.get(
+    "/refresh",
+    validateRefreshToken,
+    asyncHandler(authController.refresh),
+);
+
+router.post(
+    "/logout",
+    authenticator,
+    parseRefreshToken,
+    asyncHandler(authController.logout),
+);
 
 export default router;

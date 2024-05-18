@@ -192,7 +192,7 @@ export class AuthController {
         res.json({ user });
     };
 
-    async refresh(req: Request, res: Response, next: NextFunction) {
+    refresh = async (req: Request, res: Response, next: NextFunction) => {
         const auth = (req as AuthRequest).auth;
         try {
             const payload: AuthPayload = {
@@ -247,5 +247,23 @@ export class AuthController {
             next(err);
             return;
         }
-    }
+    };
+
+    logout = async (req: Request, res: Response, next: NextFunction) => {
+        const { id, sub } = (req as AuthRequest).auth;
+        try {
+            await this.tokenService.deleteRefreshToken(String(id));
+            this.logger.info("Refresh token has been deleted", {
+                id: id,
+            });
+            this.logger.info("User has been logged out", { id: sub });
+
+            res.clearCookie("refreshToken");
+            res.clearCookie("accessToken");
+            res.status(200).json({});
+        } catch (err) {
+            next(err);
+            return;
+        }
+    };
 }
