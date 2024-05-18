@@ -19,4 +19,6 @@ router.post(
     asyncHandler(storeController.create),
 );
 
+router.get("/", authenticator, asyncHandler(storeController.getAll));
+
 export default router;

@@ -62,13 +62,15 @@ export interface LoginUserRequest extends Request {
     body: Pick<UserI, "email" | "password">;
 }
 
+export interface Auth {
+    sub: string;
+    role: string;
+    id?: string;
+    store: string;
+}
+
 export interface AuthRequest extends Request {
-    auth: {
-        sub: string;
-        role: string;
-        id?: string;
-        store: string;
-    };
+    auth: Auth;
 }
 
 export interface IStore {
@@ -79,3 +81,5 @@ export interface IStore {
 export interface CreateStoreRequest extends Request {
     body: IStore;
 }
+
+export interface StoreRequest extends Request {}
