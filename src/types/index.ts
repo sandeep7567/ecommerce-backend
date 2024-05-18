@@ -48,6 +48,6 @@ export interface AuthPayload extends JwtPayload {
     store: string;
 }
 
-export interface RegisterUserRequest extends Request {
+export interface LoginUserRequest extends Request {
     body: Pick<UserI, "email" | "password">;
 }
