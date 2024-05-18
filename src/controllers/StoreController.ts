@@ -89,9 +89,36 @@ export class StoreController {
 
             const updateStore = await this.storeService.updateById(store);
 
-            this.logger.info(`Update store ${store}`, { id: updateStore?._id });
+            this.logger.info(`Update store by id`, { id: updateStore?._id });
 
             res.json({ id: updateStore?._id });
+        } catch (err) {
+            next(err);
+            return;
+        }
+    };
+
+    destroy = async (req: StoreRequest, res: Response, next: NextFunction) => {
+        const result = validationResult(req);
+
+        if (!result.isEmpty()) {
+            return res.status(400).json({ errors: result.array() });
+        }
+
+        const { sub } = (req as AuthRequest).auth;
+        const { storeId } = req.params;
+
+        try {
+            const store: Pick<StoreI, "_id" | "userId"> = {
+                _id: new mongoose.Types.ObjectId(storeId),
+                userId: new mongoose.Types.ObjectId(sub),
+            };
+
+            await this.storeService.deleteById(store);
+
+            this.logger.info(`Delete store by Id`, { id: store?._id });
+
+            res.json({ id: store?._id });
         } catch (err) {
             next(err);
             return;

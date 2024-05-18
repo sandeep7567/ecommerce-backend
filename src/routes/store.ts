@@ -23,4 +23,10 @@ router.get("/", authenticator, asyncHandler(storeController.getAll));
 
 router.patch("/:storeId", authenticator, asyncHandler(storeController.update));
 
+router.delete(
+    "/:storeId",
+    authenticator,
+    asyncHandler(storeController.destroy),
+);
+
 export default router;

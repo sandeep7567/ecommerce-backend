@@ -24,4 +24,15 @@ export class StoreService {
             { new: true },
         );
     }
+
+    async deleteById(store: Pick<StoreI, "_id" | "userId">) {
+        const { userId, _id } = store;
+        return await StoreModel.findOneAndDelete(
+            {
+                userId,
+                _id,
+            },
+            { new: true },
+        );
+    }
 }
