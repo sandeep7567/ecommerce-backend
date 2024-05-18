@@ -8,12 +8,9 @@ config({
 const {
     PORT,
     NODE_ENV,
-    DB_HOST,
-    DB_PORT,
-    DB_USERNAME,
-    DB_PASSWORD,
-    DB_NAME,
+    MONGO_URL,
     REFRESH_TOKEN_SECRET,
+    ACCESS_TOKEN_SECRET,
     JWKS_URI,
     PRIVATE_KEY,
     ORIGIN_URI,
@@ -22,14 +19,9 @@ const {
 export const Config = {
     PORT,
     NODE_ENV,
-    DB_HOST,
-    DB_PORT,
-    DB_USERNAME,
-    DB_PASSWORD,
-    DB_NAME,
+    MONGO_URL,
     REFRESH_TOKEN_SECRET,
-    JWKS_URI,
-    PRIVATE_KEY,
+    ACCESS_TOKEN_SECRET,
     ORIGIN_URI,
 };
 
