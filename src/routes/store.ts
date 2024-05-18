@@ -21,4 +21,6 @@ router.post(
 
 router.get("/", authenticator, asyncHandler(storeController.getAll));
 
+router.patch("/:storeId", authenticator, asyncHandler(storeController.update));
+
 export default router;
