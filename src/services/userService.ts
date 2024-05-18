@@ -8,7 +8,7 @@ export class UserService {
         return await newUser.save();
     }
 
-    async getUserByEmail(email: string) {
+    async findByEmailWithPassword(email: string) {
         return await UserModel.findOne({ email });
     }
 }
