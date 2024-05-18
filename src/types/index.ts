@@ -47,3 +47,7 @@ export interface AuthPayload extends JwtPayload {
     role: string;
     store: string;
 }
+
+export interface RegisterUserRequest extends Request {
+    body: Pick<UserI, "email" | "password">;
+}
