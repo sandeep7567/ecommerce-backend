@@ -11,4 +11,8 @@ export class UserService {
     async findByEmailWithPassword(email: string) {
         return await UserModel.findOne({ email });
     }
+
+    async findById(id: string) {
+        return await UserModel.findById(id).select(["-password"]);
+    }
 }

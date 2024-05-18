@@ -1,4 +1,4 @@
-import { NextFunction, Response } from "express";
+import { NextFunction, Response, Request } from "express";
 import { validationResult } from "express-validator";
 import { Logger } from "winston";
 
@@ -9,6 +9,7 @@ import { TokenService } from "../services/tokenService";
 import { UserService } from "../services/userService";
 import {
     AuthPayload,
+    AuthRequest,
     CreateUserIRequest,
     LoginUserRequest,
     Roles,
@@ -183,5 +184,11 @@ export class AuthController {
             next(err);
             return;
         }
+    };
+
+    self = async (req: Request, res: Response) => {
+        const userId = (req as AuthRequest).auth.sub;
+        const user = await this.userService.findById(userId);
+        res.json({ user });
     };
 }

@@ -60,3 +60,12 @@ export interface AuthPayload extends JwtPayload {
 export interface LoginUserRequest extends Request {
     body: Pick<UserI, "email" | "password">;
 }
+
+export interface AuthRequest extends Request {
+    auth: {
+        sub: string;
+        role: string;
+        id?: string;
+        tenant: string;
+    };
+}
