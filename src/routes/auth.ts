@@ -9,6 +9,7 @@ import { CredentialService } from "./../services/credentialService";
 import logger from "../config/logger";
 
 import { asyncHandler } from "../middlewares/asyncHandler";
+import loginValidator from "../validators/loginValidator";
 
 const router = express.Router();
 
@@ -27,5 +28,7 @@ router.post(
     registerValidator,
     asyncHandler(authController.register),
 );
+
+router.post("/login", loginValidator, asyncHandler(authController.login));
 
 export default router;
