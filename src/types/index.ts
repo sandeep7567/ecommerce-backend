@@ -3,6 +3,7 @@ import { JwtPayload } from "jsonwebtoken";
 import mongoose from "mongoose";
 
 export interface StoreI {
+    userId: mongoose.Types.ObjectId;
     _id?: mongoose.Types.ObjectId;
     name: string;
     createdAt: Date;
@@ -68,4 +69,13 @@ export interface AuthRequest extends Request {
         id?: string;
         store: string;
     };
+}
+
+export interface IStore {
+    name: string;
+    userId: string;
+}
+
+export interface CreateStoreRequest extends Request {
+    body: IStore;
 }
