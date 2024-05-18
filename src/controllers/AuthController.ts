@@ -191,4 +191,61 @@ export class AuthController {
         const user = await this.userService.findById(userId);
         res.json({ user });
     };
+
+    async refresh(req: Request, res: Response, next: NextFunction) {
+        const auth = (req as AuthRequest).auth;
+        try {
+            const payload: AuthPayload = {
+                sub: auth.sub,
+                role: auth.role,
+                store: auth.store,
+            };
+
+            const accessToken = this.tokenService.generateAccessToken(payload);
+
+            const user = await this.userService.findById(auth.sub);
+
+            if (!user) {
+                const error = createHttpError(
+                    400,
+                    "User with the token could not find",
+                );
+                next(error);
+                return;
+            }
+
+            // Persist the refresh token;
+            const newRefreshToken =
+                await this.tokenService.persistRefreshToken();
+
+            // Delete old refresh token
+            await this.tokenService.deleteRefreshToken(String(auth.id));
+
+            const refreshToken = this.tokenService.generateRefreshToken({
+                ...payload,
+                id: newRefreshToken._id,
+            });
+
+            res.cookie("accessToken", accessToken, {
+                domain: "localhost",
+                sameSite: "strict",
+                maxAge: 1000 * 60 * 60, // 1hr
+                httpOnly: true,
+            });
+
+            res.cookie("refreshToken", refreshToken, {
+                domain: "localhost",
+                sameSite: "strict",
+                maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year
+                httpOnly: true,
+            });
+
+            this.logger.info("User has been login", { id: user._id });
+
+            res.status(200).json({ id: user.id });
+        } catch (err) {
+            next(err);
+            return;
+        }
+    }
 }

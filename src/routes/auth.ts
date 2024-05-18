@@ -34,4 +34,6 @@ router.post("/login", loginValidator, asyncHandler(authController.login));
 
 router.get("/self", authenticator, asyncHandler(authController.self));
 
+router.get("/refresh", authenticator, asyncHandler(authController.refresh));
+
 export default router;
