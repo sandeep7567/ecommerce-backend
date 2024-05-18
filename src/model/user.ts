@@ -34,7 +34,6 @@ const userSchema = new mongoose.Schema<UserI>(
             default: false,
             required: false,
         },
-
         role: {
             type: String,
             enum: Object.values(Roles),

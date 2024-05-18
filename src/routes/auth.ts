@@ -1,4 +1,4 @@
-import express from "express";
+import express, { RequestHandler } from "express";
 import { AuthController } from "../controllers/AuthController";
 
 import registerValidator from "../validators/registerValidator";
@@ -10,6 +10,7 @@ import logger from "../config/logger";
 
 import { asyncHandler } from "../middlewares/asyncHandler";
 import loginValidator from "../validators/loginValidator";
+import authenticator from "../middlewares/authenticator";
 
 const router = express.Router();
 
@@ -30,5 +31,7 @@ router.post(
 );
 
 router.post("/login", loginValidator, asyncHandler(authController.login));
+
+router.get("/self", authenticator, asyncHandler(authController.self));
 
 export default router;
