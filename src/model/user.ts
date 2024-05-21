@@ -14,6 +14,7 @@ const userSchema = new mongoose.Schema<UserI>(
         email: {
             type: String,
             required: true,
+            unique: true,
         },
         isEmailVerified: {
             type: Boolean,
@@ -24,11 +25,13 @@ const userSchema = new mongoose.Schema<UserI>(
             type: String,
             required: true,
         },
-        storeId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Store",
-            default: null,
-        },
+        storeId: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Store",
+                default: null,
+            },
+        ],
         isPublish: {
             type: Boolean,
             default: false,
