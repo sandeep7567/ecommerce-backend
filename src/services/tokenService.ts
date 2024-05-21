@@ -19,15 +19,16 @@ export class TokenService {
             algorithm: "HS256",
             expiresIn: "1y",
             issuer: "auth-service",
-            jwtid: payload.id,
+            jwtid: String(payload.id),
         });
         return refreshToken;
     }
 
-    async persistRefreshToken() {
+    async persistRefreshToken(userId: string) {
         const MS_IN_YEAR = 1000 * 60 * 60 * 24 * 365;
 
         const newRefreshToken = new RefreshTokenModel({
+            user: userId,
             expiresAt: new Date(Date.now() + MS_IN_YEAR),
         });
 
@@ -35,6 +36,6 @@ export class TokenService {
     }
 
     async deleteRefreshToken(tokenId: string) {
-        return await RefreshTokenModel.deleteOne({ _id: tokenId });
+        await RefreshTokenModel.deleteOne({ _id: tokenId });
     }
 }

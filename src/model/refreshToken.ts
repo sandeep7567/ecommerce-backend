@@ -6,6 +6,7 @@ const refreshTokenSchema = new mongoose.Schema<RefreshTokenI>(
         user: {
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
+            required: true,
         },
         expiresAt: {
             type: Date,

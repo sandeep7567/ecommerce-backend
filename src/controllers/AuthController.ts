@@ -68,8 +68,9 @@ export class AuthController {
             const accessToken = this.tokenService.generateAccessToken(payload);
 
             // Persist the refresh token;
-            const newRefreshToken =
-                await this.tokenService.persistRefreshToken();
+            const newRefreshToken = await this.tokenService.persistRefreshToken(
+                String(user._id),
+            );
 
             const refreshToken = this.tokenService.generateRefreshToken({
                 ...payload,
@@ -155,8 +156,9 @@ export class AuthController {
             const accessToken = this.tokenService.generateAccessToken(payload);
 
             // Persist the refresh token;
-            const newRefreshToken =
-                await this.tokenService.persistRefreshToken();
+            const newRefreshToken = await this.tokenService.persistRefreshToken(
+                String(user._id),
+            );
 
             const refreshToken = this.tokenService.generateRefreshToken({
                 ...payload,
@@ -215,8 +217,9 @@ export class AuthController {
             }
 
             // Persist the refresh token;
-            const newRefreshToken =
-                await this.tokenService.persistRefreshToken();
+            const newRefreshToken = await this.tokenService.persistRefreshToken(
+                String(user._id),
+            );
 
             // Delete old refresh token
             await this.tokenService.deleteRefreshToken(String(auth.id));

@@ -14,7 +14,6 @@ export default expressjwt({
     },
     async isRevoked(req: Request, token) {
         try {
-            // const refreshTokenRepo = AppDataSource.getRepository(RefreshToken);
             const refreshToken = await refreshTokenModel.findOne({
                 _id: (token?.payload as RefreshTokenPayload).id,
                 user: token?.payload.sub,
