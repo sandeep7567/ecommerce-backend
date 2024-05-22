@@ -29,7 +29,7 @@ const userSchema = new mongoose.Schema<UserI>(
             {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "Store",
-                default: null,
+                default: [],
             },
         ],
         isPublish: {

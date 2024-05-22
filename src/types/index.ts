@@ -24,7 +24,7 @@ export interface UserI {
     password: string;
     role: Roles;
     isPublish: boolean;
-    storeId?: mongoose.Types.ObjectId;
+    storeId?: mongoose.Types.ObjectId[];
     createdAt?: Date;
     updatedAt?: Date;
 }

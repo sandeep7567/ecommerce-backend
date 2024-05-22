@@ -12,10 +12,12 @@ import {
 } from "../types";
 import createHttpError from "http-errors";
 import mongoose from "mongoose";
+import { UserService } from "../services/userService";
 
 export class StoreController {
     constructor(
         private storeService: StoreService,
+        private userService: UserService,
         private logger: Logger,
     ) {}
 
@@ -37,6 +39,8 @@ export class StoreController {
                 ...req.body,
                 userId: auth.sub,
             });
+
+            await this.userService.pushStoreId(auth.sub, store._id);
 
             this.logger.info("Store created", { id: store._id });
 

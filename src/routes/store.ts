@@ -6,11 +6,13 @@ import { asyncHandler } from "../middlewares/asyncHandler";
 import authenticator from "../middlewares/authenticator";
 import { StoreService } from "../services/storeService";
 import storeValidator from "../validators/storeValidator";
+import { UserService } from "../services/userService";
 
 const router = express.Router();
 
 const storeService = new StoreService();
-const storeController = new StoreController(storeService, logger);
+const userService = new UserService();
+const storeController = new StoreController(storeService, userService, logger);
 
 router.post(
     "/",
