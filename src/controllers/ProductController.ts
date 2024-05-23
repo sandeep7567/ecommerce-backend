@@ -1,28 +1,29 @@
 import { NextFunction, Response } from "express";
 import { Logger } from "winston";
-
-// import { Roles } from "../constants";
 import { validationResult } from "express-validator";
+import createHttpError from "http-errors";
+import mongoose from "mongoose";
+import { ProductService } from "../services/productService";
 import { StoreService } from "../services/storeService";
+import { UserService } from "../services/userService";
 import {
     AuthRequest,
+    CreateProductRequest,
     CreateStoreRequest,
     StoreI,
     StoreRequest,
 } from "../types";
-import createHttpError from "http-errors";
-import mongoose from "mongoose";
-import { UserService } from "../services/userService";
 
-export class StoreController {
+export class ProductController {
     constructor(
+        private productService: ProductService,
         private storeService: StoreService,
         private userService: UserService,
         private logger: Logger,
     ) {}
 
     create = async (
-        req: CreateStoreRequest,
+        req: CreateProductRequest,
         res: Response,
         next: NextFunction,
     ) => {
@@ -33,18 +34,13 @@ export class StoreController {
         }
 
         const auth = (req as AuthRequest).auth;
+        const { name, imageFile, price, archived, featured, properties } =
+            req.body;
 
         try {
-            const store = await this.storeService.create({
-                ...req.body,
-                userId: auth.sub,
-            });
+            this.logger.info("Product created", { id: "store._id" });
 
-            await this.userService.pushStoreId(auth.sub, store._id);
-
-            this.logger.info("Store created", { id: store._id });
-
-            res.status(200).json({ storeId: store._id });
+            res.status(200).json({ productId: req.body });
         } catch (err) {
             next(err);
             return;
@@ -52,6 +48,25 @@ export class StoreController {
     };
 
     getAll = async (req: StoreRequest, res: Response, next: NextFunction) => {
+        const authReq = req as AuthRequest;
+
+        const { sub } = authReq.auth;
+
+        try {
+            const store = await this.storeService.getByUserId(sub);
+
+            if (!store) {
+                next(createHttpError(404, "Store not found"));
+                return;
+            }
+
+            return res.json({ store });
+        } catch (error) {
+            next(createHttpError(500, "Internal error"));
+        }
+    };
+
+    getOne = async (req: StoreRequest, res: Response, next: NextFunction) => {
         const authReq = req as AuthRequest;
 
         const { sub } = authReq.auth;

@@ -29,7 +29,7 @@ const productSchema = new mongoose.Schema<ProductI>(
             default: false,
         },
         price: {
-            type: String,
+            type: Number,
             required: true,
         },
         storeId: {

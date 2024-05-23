@@ -39,11 +39,13 @@ export interface ProductI {
     _id?: mongoose.Types.ObjectId;
     storeId: mongoose.Types.ObjectId;
     name: string;
-    price: string;
+    price: number;
     archived: boolean;
     featured: boolean;
     properties: PropertyI[];
     imageFile: string;
+    createdAt?: Date;
+    updatedAt?: Date;
 }
 
 export interface RefreshTokenI {
@@ -98,5 +100,9 @@ export interface IStore {
 export interface CreateStoreRequest extends Request {
     body: IStore;
 }
+export interface CreateProductRequest extends Request {
+    body: ProductI;
+}
 
 export interface StoreRequest extends Request {}
+export interface ProductRequest extends Request {}
