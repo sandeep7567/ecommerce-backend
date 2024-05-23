@@ -11,6 +11,7 @@ import { StoreService } from "../services/storeService";
 import { UserService } from "../services/userService";
 import createProductValidator from "../validators/createProductValidator";
 import { CloudinaryStorage } from "../storage/cloudinaryStorage";
+import updateProductValidator from "../validators/updateProductValidator";
 
 const memoryStorage = multer.memoryStorage();
 const upload = multer({
@@ -22,10 +23,8 @@ const upload = multer({
 
 const router = express.Router();
 
-const storeService = new StoreService();
 const productService = new ProductService();
 const storage = new CloudinaryStorage();
-const userService = new UserService();
 const productController = new ProductController(
     productService,
     storage,
@@ -58,6 +57,8 @@ router.patch(
     "/:storeId/:productId",
     authenticator,
     storeByUserIdCheck,
+    upload.single("imageFile"),
+    updateProductValidator,
     asyncHandler(productController.update),
 );
 

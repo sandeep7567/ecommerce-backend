@@ -123,7 +123,7 @@ export class ProductController {
     };
 
     update = async (
-        req: CreateStoreRequest,
+        req: CreateProductRequest,
         res: Response,
         next: NextFunction,
     ) => {
@@ -134,20 +134,78 @@ export class ProductController {
         }
 
         const { sub } = (req as AuthRequest).auth;
-        const { storeId } = req.params;
+        const { storeId, productId } = req.params;
+
+        if (!storeId) {
+            return next(createHttpError(404, "Store not exists"));
+        }
 
         try {
-            const store: Pick<StoreI, "_id" | "name" | "userId"> = {
-                name: req.body.name,
-                _id: new mongoose.Types.ObjectId(storeId),
-                userId: new mongoose.Types.ObjectId(sub),
+            const existingProduct =
+                await this.productService.getProduct(productId);
+
+            if (!existingProduct) {
+                return next(createHttpError(404, "Product not found"));
+            }
+
+            if (existingProduct.storeId.toString() !== storeId) {
+                return next(createHttpError(403, "Forbidden for this product"));
+            }
+
+            let newImage: string | undefined;
+            let oldImage: string | undefined;
+
+            if (req?.file) {
+                oldImage = existingProduct.imageFile;
+
+                const image = req?.file as Express.Multer.File;
+                const imageName = uuidv4();
+
+                const imageRes = (await this.storage.upload({
+                    fileData: image.buffer,
+                    filename: imageName,
+                    fileMimeType: image.mimetype,
+                })) as UploadApiResponse;
+
+                if (oldImage && imageRes?.public_id) {
+                    newImage = imageRes.public_id;
+
+                    await this.storage.delete(oldImage);
+                }
+            }
+
+            oldImage = existingProduct.imageFile;
+
+            const { properties } = req.body;
+
+            const isPropertyValueCorrect = properties.every((prop) =>
+                (prop.value as string).includes(","),
+            );
+            if (!isPropertyValueCorrect) {
+                return next(
+                    createHttpError(
+                        400,
+                        `please include "," for every new value property`,
+                    ),
+                );
+            }
+
+            const formattedProperty = req.body.properties.map((prop) => ({
+                name: prop.name,
+                value: (prop.value as string).split(","),
+            }));
+
+            const product: ProductI = {
+                ...req.body,
+                properties: formattedProperty,
+                imageFile: newImage ? newImage : oldImage,
             };
 
-            // const updateStore = await this.productService.updateById(store);
+            await this.productService.updateProduct(productId, product);
 
-            this.logger.info(`Update store by id`, { id: "updateStore?._id " });
+            this.logger.info(`Product created with ${product.name}`);
 
-            res.json({ id: "updateStore?._id" });
+            res.json({ id: existingProduct._id });
         } catch (err) {
             next(err);
             return;

@@ -62,7 +62,7 @@ export class AuthController {
             const payload: AuthPayload = {
                 sub: String(user._id),
                 role: user.role,
-                store: user.storeId ? String(user.storeId) : "",
+                store: !!user.storeId?.length ? String(user.storeId?.[0]) : "",
             };
 
             const accessToken = this.tokenService.generateAccessToken(payload);
@@ -150,7 +150,7 @@ export class AuthController {
             const payload: AuthPayload = {
                 sub: String(user.id),
                 role: user.role,
-                store: user.storeId ? String(user.storeId) : "",
+                store: !!user.storeId?.length ? String(user.storeId?.[0]) : "",
             };
 
             const accessToken = this.tokenService.generateAccessToken(payload);

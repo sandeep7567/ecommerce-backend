@@ -18,8 +18,4 @@ export default [
         .withMessage(
             "Menu item value is required and must be a postive number",
         ),
-    body("imageFile").custom((value, { req }) => {
-        if (!req.file) throw new Error("Product image is required");
-        return true;
-    }),
 ];
