@@ -11,6 +11,7 @@ import {
     CreateProductRequest,
     CreateStoreRequest,
     ProductI,
+    ProductRequest,
     StoreI,
     StoreRequest,
 } from "../types";
@@ -100,20 +101,18 @@ export class ProductController {
         }
     };
 
-    getOne = async (req: StoreRequest, res: Response, next: NextFunction) => {
-        const authReq = req as AuthRequest;
+    getOne = async (req: ProductRequest, res: Response, next: NextFunction) => {
+        console.log(req.params);
+        if (!req.params?.productId) {
+            return next(createHttpError(400, "Product id is required"));
+        }
 
-        const { sub } = authReq.auth;
+        const { productId } = req.params;
 
         try {
-            const store = await this.productService.getProduct(sub);
+            const product = await this.productService.getProduct(productId);
 
-            if (!store) {
-                next(createHttpError(404, "Store not found"));
-                return;
-            }
-
-            return res.json({ store });
+            return res.json({ product });
         } catch (error) {
             next(createHttpError(500, "Internal error"));
         }

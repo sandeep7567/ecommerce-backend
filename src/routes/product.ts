@@ -41,7 +41,7 @@ router.post(
 );
 
 router.get(
-    "/:storeId",
+    "/:storeId/products",
     authenticator,
     storeByUserIdCheck,
     asyncHandler(productController.getAll),
