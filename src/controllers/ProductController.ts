@@ -77,7 +77,7 @@ export class ProductController {
 
             this.logger.info("Product created", { id: newProduct?._id });
 
-            res.status(200).json({ product: newProduct });
+            res.status(200).json({ product: newProduct?._id });
         } catch (err) {
             next(err);
             return;
@@ -85,19 +85,16 @@ export class ProductController {
     };
 
     getAll = async (req: StoreRequest, res: Response, next: NextFunction) => {
-        const authReq = req as AuthRequest;
+        const { storeId } = req.params;
 
-        const { sub } = authReq.auth;
+        if (!storeId) {
+            return next(createHttpError(400, "Store id is required"));
+        }
 
         try {
-            const store = await this.productService.getProduct(sub);
+            const products = await this.productService.getProducts(storeId);
 
-            if (!store) {
-                next(createHttpError(404, "Store not found"));
-                return;
-            }
-
-            return res.json({ store });
+            return res.json({ products });
         } catch (error) {
             next(createHttpError(500, "Internal error"));
         }

@@ -14,6 +14,10 @@ export class ProductService {
         return (await ProductModel.findById(productId)) as ProductI;
     }
 
+    async getProducts(storeId: string): Promise<ProductI[]> {
+        return (await ProductModel.find({ storeId })) as ProductI[];
+    }
+
     async updateProduct(
         productId: string,
         product: ProductI,
