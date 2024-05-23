@@ -1,23 +1,18 @@
+import { UploadApiResponse } from "cloudinary";
 import { NextFunction, Response } from "express";
-import { Logger } from "winston";
 import { validationResult } from "express-validator";
 import createHttpError from "http-errors";
 import mongoose from "mongoose";
+import { v4 as uuidv4 } from "uuid";
+import { Logger } from "winston";
 import { ProductService } from "../services/productService";
-import { StoreService } from "../services/storeService";
-import { UserService } from "../services/userService";
 import {
     AuthRequest,
     CreateProductRequest,
-    CreateStoreRequest,
     ProductI,
     ProductRequest,
-    StoreI,
     StoreRequest,
 } from "../types";
-import ProductModal from "../model/product";
-import { v4 as uuidv4 } from "uuid";
-import { UploadApiResponse } from "cloudinary";
 import { FileStorage } from "../types/storage";
 
 export class ProductController {
@@ -102,7 +97,6 @@ export class ProductController {
     };
 
     getOne = async (req: ProductRequest, res: Response, next: NextFunction) => {
-        console.log(req.params);
         if (!req.params?.productId) {
             return next(createHttpError(400, "Product id is required"));
         }
@@ -129,7 +123,6 @@ export class ProductController {
             return res.status(400).json({ errors: result.array() });
         }
 
-        const { sub } = (req as AuthRequest).auth;
         const { storeId, productId } = req.params;
 
         if (!storeId) {
@@ -215,20 +208,35 @@ export class ProductController {
             return res.status(400).json({ errors: result.array() });
         }
 
-        const { sub } = (req as AuthRequest).auth;
-        const { storeId } = req.params;
+        if (!req.params.storeId) {
+            return next(createHttpError(400, "Store id is required"));
+        }
+
+        if (!req.params.productId) {
+            return next(createHttpError(400, "Product id is required"));
+        }
 
         try {
-            const store: Pick<StoreI, "_id" | "userId"> = {
-                _id: new mongoose.Types.ObjectId(storeId),
-                userId: new mongoose.Types.ObjectId(sub),
-            };
+            const { productId, storeId } = req.params;
 
-            // await this.storeService.deleteById(store);
+            const existingProduct =
+                await this.productService.getProduct(productId);
 
-            this.logger.info(`Delete store by Id`, { id: store?._id });
+            if (!existingProduct) {
+                return next(createHttpError(404, "Product not found"));
+            }
 
-            res.json({ id: store?._id });
+            if (existingProduct.storeId.toString() !== storeId) {
+                return next(createHttpError(403, "Forbidden for this product"));
+            }
+
+            const product = await this.productService.deleteById(productId);
+
+            await this.storage.delete(`${product.imageFile}`);
+
+            this.logger.info(`Delete product by Id`, { id: product._id });
+
+            res.json({ id: product._id });
         } catch (err) {
             next(err);
             return;

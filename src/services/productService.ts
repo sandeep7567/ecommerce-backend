@@ -28,4 +28,8 @@ export class ProductService {
             { new: true },
         )) as ProductI;
     }
+
+    async deleteById(productId: string) {
+        return (await ProductModel.findByIdAndDelete(productId)) as ProductI;
+    }
 }
