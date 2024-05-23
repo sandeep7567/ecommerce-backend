@@ -1,38 +1,16 @@
-import mongoose from "mongoose";
-import StoreModel from "../model/store";
-import { IStore, StoreI } from "../types";
+import ProductModel from "../model/product";
+import { ProductI } from "../types";
 
 export class ProductService {
     constructor() {}
 
-    async create(store: IStore) {
-        const newStore = new StoreModel(store);
+    async createProduct(product: ProductI): Promise<ProductI | null> {
+        const newProduct = new ProductModel(product);
 
-        return await newStore.save();
+        return newProduct.save();
     }
 
-    async getByUserId(userId: string) {
-        return await StoreModel.find({ userId });
-    }
-
-    async updateById(store: Pick<StoreI, "_id" | "name" | "userId">) {
-        const { name, userId, _id } = store;
-
-        return await StoreModel.findOneAndUpdate(
-            { userId, _id },
-            { name },
-            { new: true },
-        );
-    }
-
-    async deleteById(store: Pick<StoreI, "_id" | "userId">) {
-        const { userId, _id } = store;
-        return await StoreModel.findOneAndDelete(
-            {
-                userId,
-                _id,
-            },
-            { new: true },
-        );
+    async getProduct(productId: string): Promise<ProductI | null> {
+        return (await ProductModel.findById(productId)) as ProductI;
     }
 }

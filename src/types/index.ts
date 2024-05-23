@@ -32,7 +32,7 @@ export interface UserI {
 export interface PropertyI {
     _id?: mongoose.Types.ObjectId;
     name: string;
-    value: string;
+    value: string | string[] | mongoose.Mixed[];
 }
 
 export interface ProductI {

@@ -7,6 +7,9 @@ export default [
         .withMessage("Delivery price must be a positive number"),
     body("archived").isBoolean().optional(),
     body("featured").isBoolean().optional(),
+    body("properties")
+        .isArray()
+        .withMessage("Properties items must be an array"),
     body("properties.*.name")
         .notEmpty()
         .withMessage("Properties item name is required"),

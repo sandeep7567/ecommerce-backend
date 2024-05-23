@@ -10,6 +10,10 @@ export const storeByUserIdCheck = async (
 ) => {
     try {
         const { storeId } = req.params;
+        if (!storeId) {
+            return next(createHttpError(404, "store not found!"));
+        }
+
         const storeByUserId = await StoreModel.findOne({
             _id: storeId,
             userId: (req as AuthRequest).auth.sub,

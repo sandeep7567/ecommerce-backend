@@ -2,6 +2,11 @@ import mongoose from "mongoose";
 import { ProductI, PropertyI } from "../types";
 
 const propertySchema = new mongoose.Schema<PropertyI>({
+    _id: {
+        type: mongoose.Schema.Types.ObjectId,
+        required: true,
+        default: () => new mongoose.Types.ObjectId(),
+    },
     name: {
         type: String,
         required: true,
@@ -14,6 +19,10 @@ const propertySchema = new mongoose.Schema<PropertyI>({
 
 const productSchema = new mongoose.Schema<ProductI>(
     {
+        storeId: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Store",
+        },
         name: {
             type: String,
             required: true,
@@ -32,20 +41,11 @@ const productSchema = new mongoose.Schema<ProductI>(
             type: Number,
             required: true,
         },
-        storeId: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Store",
-        },
         imageFile: {
             type: String,
             required: false,
         },
-        properties: [
-            {
-                type: [propertySchema], // Use the property schema for dynamic attributes
-                required: true,
-            },
-        ],
+        properties: [propertySchema],
     },
     { timestamps: true },
 );

@@ -10,15 +10,19 @@ import {
     AuthRequest,
     CreateProductRequest,
     CreateStoreRequest,
+    ProductI,
     StoreI,
     StoreRequest,
 } from "../types";
+import ProductModal from "../model/product";
+import { v4 as uuidv4 } from "uuid";
+import { UploadApiResponse } from "cloudinary";
+import { FileStorage } from "../types/storage";
 
 export class ProductController {
     constructor(
         private productService: ProductService,
-        private storeService: StoreService,
-        private userService: UserService,
+        private storage: FileStorage,
         private logger: Logger,
     ) {}
 
@@ -33,14 +37,47 @@ export class ProductController {
             return res.status(400).json({ errors: result.array() });
         }
 
-        const auth = (req as AuthRequest).auth;
-        const { name, imageFile, price, archived, featured, properties } =
-            req.body;
-
         try {
-            this.logger.info("Product created", { id: "store._id" });
+            const { properties } = req.body;
 
-            res.status(200).json({ productId: req.body });
+            const isPropertyValueCorrect = properties.every((prop) =>
+                (prop.value as string).includes(","),
+            );
+            if (!isPropertyValueCorrect) {
+                return next(
+                    createHttpError(
+                        400,
+                        `please include "," for every new value property`,
+                    ),
+                );
+            }
+
+            const formattedProperty = req.body.properties.map((prop) => ({
+                name: prop.name,
+                value: (prop.value as string).split(","),
+            }));
+
+            const image = req.file as Express.Multer.File;
+            const imageName = uuidv4();
+
+            const imageResult = (await this.storage.upload({
+                fileData: image.buffer,
+                filename: imageName,
+                fileMimeType: image.mimetype,
+            })) as UploadApiResponse;
+
+            const product: ProductI = {
+                ...req.body,
+                properties: formattedProperty,
+                storeId: new mongoose.Types.ObjectId(req.params.storeId),
+                imageFile: imageResult.public_id,
+            };
+
+            const newProduct = await this.productService.createProduct(product);
+
+            this.logger.info("Product created", { id: newProduct?._id });
+
+            res.status(200).json({ product: newProduct });
         } catch (err) {
             next(err);
             return;
@@ -53,7 +90,7 @@ export class ProductController {
         const { sub } = authReq.auth;
 
         try {
-            const store = await this.storeService.getByUserId(sub);
+            const store = await this.productService.getProduct(sub);
 
             if (!store) {
                 next(createHttpError(404, "Store not found"));
@@ -72,7 +109,7 @@ export class ProductController {
         const { sub } = authReq.auth;
 
         try {
-            const store = await this.storeService.getByUserId(sub);
+            const store = await this.productService.getProduct(sub);
 
             if (!store) {
                 next(createHttpError(404, "Store not found"));
@@ -106,11 +143,11 @@ export class ProductController {
                 userId: new mongoose.Types.ObjectId(sub),
             };
 
-            const updateStore = await this.storeService.updateById(store);
+            // const updateStore = await this.productService.updateById(store);
 
-            this.logger.info(`Update store by id`, { id: updateStore?._id });
+            this.logger.info(`Update store by id`, { id: "updateStore?._id " });
 
-            res.json({ id: updateStore?._id });
+            res.json({ id: "updateStore?._id" });
         } catch (err) {
             next(err);
             return;
@@ -133,7 +170,7 @@ export class ProductController {
                 userId: new mongoose.Types.ObjectId(sub),
             };
 
-            await this.storeService.deleteById(store);
+            // await this.storeService.deleteById(store);
 
             this.logger.info(`Delete store by Id`, { id: store?._id });
 
