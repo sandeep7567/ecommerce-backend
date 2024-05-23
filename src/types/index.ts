@@ -29,6 +29,23 @@ export interface UserI {
     updatedAt?: Date;
 }
 
+export interface PropertyI {
+    _id?: mongoose.Types.ObjectId;
+    name: string;
+    value: string;
+}
+
+export interface ProductI {
+    _id?: mongoose.Types.ObjectId;
+    storeId: mongoose.Types.ObjectId;
+    name: string;
+    price: string;
+    archived: boolean;
+    featured: boolean;
+    properties: PropertyI[];
+    imageFile: string;
+}
+
 export interface RefreshTokenI {
     _id?: mongoose.Types.ObjectId;
     user: mongoose.Types.ObjectId;
