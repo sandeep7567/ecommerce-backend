@@ -106,3 +106,7 @@ export interface CreateProductRequest extends Request {
 
 export interface StoreRequest extends Request {}
 export interface ProductRequest extends Request {}
+
+export interface Filter {
+    storeId?: mongoose.Types.ObjectId;
+}
