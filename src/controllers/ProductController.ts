@@ -7,7 +7,6 @@ import { v4 as uuidv4 } from "uuid";
 import { Logger } from "winston";
 import { ProductService } from "../services/productService";
 import {
-    AuthRequest,
     CreateProductRequest,
     ProductI,
     ProductRequest,
@@ -87,13 +86,29 @@ export class ProductController {
             return next(createHttpError(400, "Store id is required"));
         }
 
-        try {
-            const products = await this.productService.getProducts(storeId);
+        const objectStoreId = new mongoose.Types.ObjectId(storeId);
 
-            return res.json({ products });
-        } catch (error) {
-            next(createHttpError(500, "Internal error"));
+        const products = await this.productService.getProducts({
+            storeId: objectStoreId,
+        });
+
+        if (!products) {
+            return next(createHttpError(404, "Product not found"));
         }
+
+        const finalProducts = await Promise.all(
+            (products as ProductI[]).map(async (product: ProductI) => {
+                const imageFile = await this.storage.getObjectUri(
+                    product?.imageFile as string,
+                );
+                return {
+                    ...product,
+                    imageFile,
+                };
+            }),
+        );
+
+        return res.json({ products: finalProducts });
     };
 
     getOne = async (req: ProductRequest, res: Response, next: NextFunction) => {
