@@ -104,6 +104,14 @@ export interface CreateProductRequest extends Request {
     body: ProductI;
 }
 
+export interface BulkIdsIds {
+    ids: string[];
+}
+
+export interface DeleteBulkProductRequest extends Request {
+    body: BulkIdsIds;
+}
+
 export interface StoreRequest extends Request {}
 export interface ProductRequest extends Request {}
 

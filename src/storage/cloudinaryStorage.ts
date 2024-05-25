@@ -36,9 +36,14 @@ export class CloudinaryStorage implements FileStorage {
     }
 
     async delete(filename: string): Promise<DestoryCloudImage> {
-        return (await cloudinary.uploader.destroy(filename, {
-            resource_type: "image",
-        })) as DestoryCloudImage;
+        try {
+            return (await cloudinary.uploader.destroy(filename, {
+                resource_type: "image",
+            })) as DestoryCloudImage;
+        } catch (error) {
+            console.error("Error deleting image from Cloudinary:", error);
+            throw error;
+        }
     }
 
     async getObjectUri(filename: string): Promise<string> {

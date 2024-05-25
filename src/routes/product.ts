@@ -7,10 +7,9 @@ import { asyncHandler } from "../middlewares/asyncHandler";
 import authenticator from "../middlewares/authenticator";
 import { storeByUserIdCheck } from "../middlewares/storeByUserIdCheck";
 import { ProductService } from "../services/productService";
-import { StoreService } from "../services/storeService";
-import { UserService } from "../services/userService";
-import createProductValidator from "../validators/createProductValidator";
 import { CloudinaryStorage } from "../storage/cloudinaryStorage";
+import bulkDeleteProductValidator from "../validators/bulkDeleteProductValidator";
+import createProductValidator from "../validators/createProductValidator";
 import updateProductValidator from "../validators/updateProductValidator";
 
 const memoryStorage = multer.memoryStorage();
@@ -67,6 +66,14 @@ router.delete(
     authenticator,
     storeByUserIdCheck,
     asyncHandler(productController.destroy),
+);
+
+router.post(
+    "/:storeId/bulk-delete",
+    authenticator,
+    storeByUserIdCheck,
+    bulkDeleteProductValidator,
+    asyncHandler(productController.bulkDestroy),
 );
 
 export default router;

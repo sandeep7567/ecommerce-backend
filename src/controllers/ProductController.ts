@@ -8,6 +8,7 @@ import { Logger } from "winston";
 import { ProductService } from "../services/productService";
 import {
     CreateProductRequest,
+    DeleteBulkProductRequest,
     ProductI,
     ProductRequest,
     StoreRequest,
@@ -252,6 +253,49 @@ export class ProductController {
             this.logger.info(`Delete product by Id`, { id: product._id });
 
             res.json({ id: product._id });
+        } catch (err) {
+            next(err);
+            return;
+        }
+    };
+
+    bulkDestroy = async (
+        req: DeleteBulkProductRequest,
+        res: Response,
+        next: NextFunction,
+    ) => {
+        const result = validationResult(req);
+
+        if (!result.isEmpty()) {
+            return res.status(400).json({ errors: result.array() });
+        }
+
+        if (!req.params.storeId) {
+            return next(createHttpError(400, "Store id is required"));
+        }
+
+        try {
+            const { storeId } = req.params;
+
+            const { deleteResult, products } =
+                await this.productService.bulkDelete(req.body, storeId);
+
+            const deleteImagePromises = products.map((product) =>
+                this.storage.delete(product.imageFile),
+            );
+            await Promise.all(deleteImagePromises);
+
+            const ids = products.map((product) => product._id);
+
+            this.logger.info(`Delete Bulk products by Ids`, {
+                ids,
+            });
+
+            res.json({
+                ids,
+                deletedCount: deleteResult.deletedCount,
+                success: deleteResult.acknowledged,
+            });
         } catch (err) {
             next(err);
             return;

@@ -1,5 +1,6 @@
+import mongoose from "mongoose";
 import ProductModel from "../model/product";
-import { Filter, ProductI } from "../types";
+import { BulkIdsIds, Filter, ProductI } from "../types";
 
 export class ProductService {
     constructor() {}
@@ -80,5 +81,23 @@ export class ProductService {
 
     async deleteById(productId: string) {
         return (await ProductModel.findByIdAndDelete(productId)) as ProductI;
+    }
+
+    async bulkDelete({ ids }: BulkIdsIds, storeId: string) {
+        const objectProductIds = ids.map(
+            (id) => new mongoose.Types.ObjectId(id),
+        );
+
+        const products = await ProductModel.find({
+            storeId: new mongoose.Types.ObjectId(storeId),
+            _id: { $in: objectProductIds },
+        });
+
+        const deleteResult = await ProductModel.deleteMany({
+            storeId: new mongoose.Types.ObjectId(storeId),
+            _id: { $in: objectProductIds },
+        });
+
+        return { products, deleteResult };
     }
 }
