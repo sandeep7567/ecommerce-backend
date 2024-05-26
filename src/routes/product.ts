@@ -11,6 +11,7 @@ import { CloudinaryStorage } from "../storage/cloudinaryStorage";
 import bulkDeleteProductValidator from "../validators/bulkDeleteProductValidator";
 import createProductValidator from "../validators/createProductValidator";
 import updateProductValidator from "../validators/updateProductValidator";
+import { param } from "express-validator";
 
 const memoryStorage = multer.memoryStorage();
 const upload = multer({
@@ -49,6 +50,11 @@ router.get(
 router.get(
     "/:productId",
     authenticator,
+    param("productId")
+        .isString()
+        .withMessage("Product ID must be provided")
+        .notEmpty()
+        .withMessage("Product ID must not be empty"),
     asyncHandler(productController.getOne),
 );
 

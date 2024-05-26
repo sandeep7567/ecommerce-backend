@@ -119,8 +119,22 @@ export class ProductController {
 
         const { productId } = req.params;
 
+        if (!productId) {
+            return next(createHttpError(400, "Missing productId"));
+        }
+
         try {
-            const product = await this.productService.getProduct(productId);
+            const productWithImageId =
+                await this.productService.getProduct(productId);
+
+            const imageFile = await this.storage.getObjectUri(
+                productWithImageId?.imageFile as string,
+            );
+
+            const product = {
+                ...productWithImageId,
+                imageFile,
+            };
 
             return res.json({ product });
         } catch (error) {

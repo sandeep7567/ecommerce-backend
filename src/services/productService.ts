@@ -12,7 +12,31 @@ export class ProductService {
     }
 
     async getProduct(productId: string): Promise<ProductI | null> {
-        return (await ProductModel.findById(productId)) as ProductI;
+        const matchQuery = {
+            _id: new mongoose.Types.ObjectId(productId),
+        };
+
+        const products = await ProductModel.aggregate<ProductI>([
+            {
+                $match: matchQuery,
+            },
+            {
+                $project: {
+                    _id: 1,
+                    storeId: 1,
+                    name: 1,
+                    price: 1,
+                    archived: 1,
+                    featured: 1,
+                    properties: 1,
+                    imageFile: 1,
+                    createdAt: 1,
+                    updatedAt: 1,
+                },
+            },
+        ]).exec();
+
+        return products.length > 0 ? products[0] : null;
     }
 
     async getProducts(filters: Filter): Promise<ProductI[]> {
