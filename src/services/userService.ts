@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import UserModel from "../model/user";
-import { CreateUserT } from "../types/index";
+import { CreateUserT, UserI } from "../types/index";
 
 export class UserService {
     async create(user: CreateUserT) {
@@ -25,5 +25,11 @@ export class UserService {
             },
             { new: true },
         );
+    }
+
+    async findByStoreId(storeId: string): Promise<UserI[]> {
+        return (await UserModel.find({ storeId })
+            .sort({ asc: 1 })
+            .select(["-password"])) as UserI[];
     }
 }
