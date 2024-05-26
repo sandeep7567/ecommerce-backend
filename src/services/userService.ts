@@ -28,8 +28,8 @@ export class UserService {
     }
 
     async findByStoreId(storeId: string): Promise<UserI[]> {
-        return (await UserModel.find({ storeId })
-            .sort({ asc: 1 })
+        return (await UserModel.find({})
+            .sort({ desc: -1 })
             .select(["-password"])) as UserI[];
     }
 }

@@ -20,7 +20,7 @@ export class UserController {
         }
 
         this.logger.info("Getting users");
-        const user = await this.userService.findByStoreId(storeId);
-        res.json({ user });
+        const users = await this.userService.findByStoreId(storeId);
+        res.json({ users });
     };
 }
