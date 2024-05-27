@@ -3,9 +3,9 @@ import logger from "../config/logger";
 import { OrderController } from "../controllers/OrderController";
 import { asyncHandler } from "../middlewares/asyncHandler";
 import authenticator from "../middlewares/authenticator";
-import { storeByUserIdCheck } from "../middlewares/storeByUserIdCheck";
 
 import { OrderService } from "../services/orderService";
+import { createOrderValidator } from "../validators/createOrderValidator";
 
 const router = express.Router();
 
@@ -15,8 +15,7 @@ const orderController = new OrderController(orderService, logger);
 router.post(
     "/:storeId",
     authenticator,
-    storeByUserIdCheck,
-    // createOrderValidator,
+    createOrderValidator,
     asyncHandler(orderController.create),
 );
 
