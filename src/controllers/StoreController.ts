@@ -52,19 +52,15 @@ export class StoreController {
     };
 
     getAll = async (req: StoreRequest, res: Response, next: NextFunction) => {
-        const authReq = req as AuthRequest;
-
-        const { sub } = authReq.auth;
-
         try {
-            const store = await this.storeService.getByUserId(sub);
+            const stores = await this.storeService.getStore();
 
-            if (!store) {
+            if (!stores) {
                 next(createHttpError(404, "Store not found"));
                 return;
             }
 
-            return res.json({ store });
+            return res.json({ stores });
         } catch (error) {
             next(createHttpError(500, "Internal error"));
         }

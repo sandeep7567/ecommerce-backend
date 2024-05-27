@@ -21,7 +21,7 @@ router.post(
     asyncHandler(storeController.create),
 );
 
-router.get("/", authenticator, asyncHandler(storeController.getAll));
+router.get("/", asyncHandler(storeController.getAll));
 
 router.patch("/:storeId", authenticator, asyncHandler(storeController.update));
 

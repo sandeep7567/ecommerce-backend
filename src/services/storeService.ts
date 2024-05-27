@@ -11,8 +11,8 @@ export class StoreService {
         return await newStore.save();
     }
 
-    async getByUserId(userId: string) {
-        return await StoreModel.find({ userId });
+    async getStore() {
+        return await StoreModel.find({});
     }
 
     async updateById(store: Pick<StoreI, "_id" | "name" | "userId">) {

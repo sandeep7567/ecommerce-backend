@@ -40,16 +40,10 @@ router.post(
     asyncHandler(productController.create),
 );
 
-router.get(
-    "/:storeId/products",
-    authenticator,
-    storeByUserIdCheck,
-    asyncHandler(productController.getAll),
-);
+router.get("/:storeId/products", asyncHandler(productController.getAll));
 
 router.get(
     "/:productId",
-    authenticator,
     param("productId")
         .isString()
         .withMessage("Product ID must be provided")
