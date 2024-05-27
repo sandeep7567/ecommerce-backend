@@ -39,10 +39,15 @@ export class ProductService {
         return products.length > 0 ? products[0] : null;
     }
 
-    async getProducts(filters: Filter): Promise<ProductI[]> {
-        const matchQuery = {
+    async getProducts(
+        filters: Filter,
+        { pageIndex = 1, pageSize = 10 }: Filter,
+    ): Promise<ProductI[]> {
+        const matchQuery: Filter = {
             ...filters,
         };
+
+        const skip = (pageIndex - 1) * pageSize;
 
         const products = await ProductModel.aggregate<ProductI>([
             {
@@ -51,27 +56,12 @@ export class ProductService {
             {
                 $sort: { createdAt: 1 },
             },
-            // {
-            //     $lookup: {
-            //         from: "categories", // Assuming this is the collection name for categories
-            //         localField: "categoryId", // Assuming categoryId is the reference field in the products collection
-            //         foreignField: "_id",
-            //         as: "category",
-            //         pipeline: [
-            //             {
-            //                 $project: {
-            //                     _id: 1,
-            //                     name: 1,
-            //                     attributes: 1,
-            //                     priceConfiguration: 1,
-            //                 },
-            //             },
-            //         ],
-            //     },
-            // },
-            // {
-            //     $unwind: "$category",
-            // },
+            {
+                $skip: skip,
+            },
+            {
+                $limit: pageSize,
+            },
             {
                 $project: {
                     _id: 1,
@@ -90,6 +80,12 @@ export class ProductService {
 
         // Return the products
         return products;
+    }
+
+    async productCount(storeId: mongoose.Types.ObjectId): Promise<number> {
+        return (await ProductModel.countDocuments({
+            storeId,
+        })) as number;
     }
 
     async updateProduct(

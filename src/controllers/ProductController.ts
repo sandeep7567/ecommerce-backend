@@ -82,6 +82,7 @@ export class ProductController {
 
     getAll = async (req: StoreRequest, res: Response, next: NextFunction) => {
         const { storeId } = req.params;
+        const { pageIndex = 1, pageSize = 10 } = req.query;
 
         if (!storeId) {
             return next(createHttpError(400, "Store id is required"));
@@ -89,9 +90,14 @@ export class ProductController {
 
         const objectStoreId = new mongoose.Types.ObjectId(storeId);
 
-        const products = await this.productService.getProducts({
-            storeId: objectStoreId,
-        });
+        const products = await this.productService.getProducts(
+            {
+                storeId: objectStoreId,
+            },
+            { pageIndex: Number(pageIndex), pageSize: Number(pageSize) },
+        );
+
+        const totalDocs = await this.productService.productCount(objectStoreId);
 
         if (!products) {
             return next(createHttpError(404, "Product not found"));
@@ -109,7 +115,17 @@ export class ProductController {
             }),
         );
 
-        return res.json({ products: finalProducts });
+        const productsDocuments = {
+            products: finalProducts,
+            totalDocs,
+            pageIndex: Number(pageIndex),
+            pageSize: Number(pageSize),
+            pageCount: Math.ceil(totalDocs / Number(pageSize)),
+        };
+
+        return res.json({
+            ...productsDocuments,
+        });
     };
 
     getOne = async (req: ProductRequest, res: Response, next: NextFunction) => {

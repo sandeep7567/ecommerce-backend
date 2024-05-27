@@ -21,7 +21,10 @@ export const storeByUserIdCheck = async (
 
         if (!storeByUserId) {
             return next(
-                createHttpError(401, "Unathourized Permission denied!"),
+                createHttpError(
+                    401,
+                    "Unathourized Store owner Permission denied!",
+                ),
             );
         }
 
