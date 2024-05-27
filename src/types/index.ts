@@ -1,6 +1,7 @@
 import { Request } from "express";
 import { JwtPayload } from "jsonwebtoken";
-import mongoose from "mongoose";
+import mongoose, { Document } from "mongoose";
+import { DELIVERY_STATUS } from "../constants";
 
 export interface StoreI {
     userId: mongoose.Types.ObjectId;
@@ -14,7 +15,6 @@ export enum Roles {
     ADMIN = "admin",
     CUSTOMER = "customer",
 }
-
 export interface UserI {
     _id?: mongoose.Types.ObjectId;
     firstName: string;
@@ -103,6 +103,9 @@ export interface CreateStoreRequest extends Request {
 export interface CreateProductRequest extends Request {
     body: ProductI;
 }
+export interface OrderRequest extends Request {
+    body: OrderSchemaI;
+}
 
 export interface BulkIdsIds {
     ids: string[];
@@ -117,4 +120,31 @@ export interface ProductRequest extends Request {}
 
 export interface Filter {
     storeId?: mongoose.Types.ObjectId;
+    pageSize?: number;
+    pageIndex?: number;
+}
+
+export type OrderStatus = keyof typeof DELIVERY_STATUS;
+export interface OrderProductData {
+    productId: string; // Reference to Product collection
+    productName: string;
+    qty: number;
+    price: number;
+}
+
+export enum STATUS {
+    PENDING = "PENDING",
+    OUT_FOR_DELIVERY = "OUT_FOR_DELIVERY",
+    DELIVERED = "DELIVERED",
+    CANCELLED = "CANCELLED",
+}
+
+export interface OrderSchemaI extends Document {
+    productInfo: OrderProductData[];
+    orderId: string;
+    storeId: string | null;
+    userId: string | undefined;
+    totalAmount: number;
+    purchaseAt: Date;
+    status: STATUS;
 }
