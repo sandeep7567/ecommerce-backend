@@ -61,7 +61,7 @@ export class OrderService {
                 $match: matchQuery,
             },
             {
-                $sort: { createdAt: 1 },
+                $sort: { createdAt: -1 },
             },
             {
                 $skip: skip,
