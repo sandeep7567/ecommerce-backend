@@ -8,7 +8,7 @@ import { Logger } from "winston";
 import { ProductService } from "../services/productService";
 import {
     CreateProductRequest,
-    DeleteBulkProductRequest,
+    DeleteBulkRequest,
     ProductI,
     ProductRequest,
     StoreRequest,
@@ -82,7 +82,7 @@ export class ProductController {
 
     getAll = async (req: StoreRequest, res: Response, next: NextFunction) => {
         const { storeId } = req.params;
-        const { pageIndex = 1, pageSize = 10 } = req.query;
+        const { pageIndex = 1, pageSize = 5 } = req.query;
 
         if (!storeId) {
             return next(createHttpError(400, "Store id is required"));
@@ -290,7 +290,7 @@ export class ProductController {
     };
 
     bulkDestroy = async (
-        req: DeleteBulkProductRequest,
+        req: DeleteBulkRequest,
         res: Response,
         next: NextFunction,
     ) => {

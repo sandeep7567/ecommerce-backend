@@ -14,7 +14,7 @@ const orderSchema = new Schema<OrderSchemaI>(
         orderId: { type: String, required: true },
         storeId: { type: String, default: null },
         userId: { type: String, default: undefined },
-        purchaseAt: { type: Date, required: true },
+        purchaseAt: { type: Date, required: true, default: Date.now },
         totalAmount: { type: Number, required: true },
         status: {
             type: String,

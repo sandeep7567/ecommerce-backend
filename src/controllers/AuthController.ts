@@ -1,4 +1,4 @@
-import { NextFunction, Response, Request } from "express";
+import { NextFunction, Request, Response } from "express";
 import { validationResult } from "express-validator";
 import { Logger } from "winston";
 
@@ -191,7 +191,20 @@ export class AuthController {
     self = async (req: Request, res: Response) => {
         const userId = (req as AuthRequest).auth.sub;
         const user = await this.userService.findById(userId);
-        res.json({ user });
+
+        const finalUser = {
+            _id: user?._id,
+            firstName: user?.firstName,
+            lastName: user?.lastName,
+            email: user?.email,
+            isEmailVerified: user?.isEmailVerified,
+            storeId: user?.storeId,
+            isPublish: user?.isPublish,
+            createdAt: user?.createdAt,
+            updatedAt: user?.updatedAt,
+        };
+
+        res.json({ user: finalUser });
     };
 
     refresh = async (req: Request, res: Response, next: NextFunction) => {

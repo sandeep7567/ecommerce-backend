@@ -13,6 +13,8 @@ import loginValidator from "../validators/loginValidator";
 import authenticator from "../middlewares/authenticator";
 import validateRefreshToken from "../middlewares/validateRefreshToken";
 import parseRefreshToken from "../middlewares/parseRefreshToken";
+import { canAccess } from "../middlewares/canAccess";
+import { Roles } from "../constants";
 
 const router = express.Router();
 
@@ -34,7 +36,16 @@ router.post(
 
 router.post("/login", loginValidator, asyncHandler(authController.login));
 
+// customer only access routes
 router.get("/self", authenticator, asyncHandler(authController.self));
+
+// admin only access routes
+router.get(
+    "/self/admin",
+    authenticator,
+    canAccess([Roles.ADMIN]),
+    asyncHandler(authController.self),
+);
 
 router.get(
     "/refresh",

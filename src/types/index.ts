@@ -103,7 +103,7 @@ export interface CreateStoreRequest extends Request {
 export interface CreateProductRequest extends Request {
     body: ProductI;
 }
-export interface OrderRequest extends Request {
+export interface OrderRequestI extends Request {
     body: OrderSchemaI;
 }
 
@@ -111,17 +111,22 @@ export interface BulkIdsIds {
     ids: string[];
 }
 
-export interface DeleteBulkProductRequest extends Request {
+export interface DeleteBulkRequest extends Request {
     body: BulkIdsIds;
 }
 
 export interface StoreRequest extends Request {}
 export interface ProductRequest extends Request {}
+export interface OrderRequest extends Request {}
 
-export interface Filter {
-    storeId?: mongoose.Types.ObjectId;
+export interface PaginationFilter {
     pageSize?: number;
     pageIndex?: number;
+}
+
+export interface Filter extends PaginationFilter {
+    storeId?: mongoose.Types.ObjectId | string;
+    orderId?: mongoose.Types.ObjectId | string;
 }
 
 export type OrderStatus = keyof typeof DELIVERY_STATUS;
@@ -140,6 +145,15 @@ export enum STATUS {
 }
 
 export interface OrderSchemaI extends Document {
+    productInfo: OrderProductData[];
+    orderId: string;
+    storeId: string | null;
+    userId: string | undefined;
+    totalAmount: number;
+    purchaseAt: Date;
+    status: STATUS;
+}
+export interface OrderI {
     productInfo: OrderProductData[];
     orderId: string;
     storeId: string | null;

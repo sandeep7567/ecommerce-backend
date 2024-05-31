@@ -78,7 +78,6 @@ export class ProductService {
             },
         ]).exec();
 
-        // Return the products
         return products;
     }
 

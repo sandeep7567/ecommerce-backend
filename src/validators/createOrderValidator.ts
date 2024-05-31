@@ -11,8 +11,6 @@ export const createOrderValidator = [
         .withMessage("price must be a number"),
     body("productInfo.*.qty").isNumeric().withMessage("qty must be a number"),
 
-    body("orderId").isString().withMessage("orderId must be a string"),
-
     body("totalAmount")
         .isNumeric()
         .withMessage("Total amount must be a number"),
@@ -27,9 +25,11 @@ export const createOrderValidator = [
     body("purchaseAt")
         .isISO8601()
         .toDate()
-        .withMessage("purchaseAt must be a valid ISO 8601 date"),
+        .withMessage("purchaseAt must be a valid ISO 8601 date")
+        .optional(),
 
     body("status")
         .isIn(["PENDING", "OUT_FOR_DELIVERY", "DELIVERED", "CANCELLED"])
-        .withMessage("Invalid status"),
+        .withMessage("Invalid status")
+        .optional(),
 ];

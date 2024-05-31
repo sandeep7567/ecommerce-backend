@@ -32,11 +32,6 @@ const userSchema = new mongoose.Schema<UserI>(
                 default: [],
             },
         ],
-        isPublish: {
-            type: Boolean,
-            default: false,
-            required: false,
-        },
         role: {
             type: String,
             enum: Object.values(Roles),
@@ -45,5 +40,7 @@ const userSchema = new mongoose.Schema<UserI>(
     },
     { timestamps: true },
 );
+
+userSchema.index({ storeId: 1 });
 
 export default mongoose.model<UserI>("User", userSchema);

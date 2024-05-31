@@ -1,8 +1,14 @@
 import { NextFunction, Response } from "express";
 import { validationResult } from "express-validator";
 import createHttpError from "http-errors";
+import { v4 as uuidv4 } from "uuid";
 import { Logger } from "winston";
-import { OrderRequest } from "../types";
+import {
+    DeleteBulkRequest,
+    OrderRequest,
+    OrderRequestI,
+    StoreRequest,
+} from "../types";
 import { OrderService } from "./../services/orderService";
 
 export class OrderController {
@@ -11,7 +17,7 @@ export class OrderController {
         private logger: Logger,
     ) {}
 
-    create = async (req: OrderRequest, res: Response, next: NextFunction) => {
+    create = async (req: OrderRequestI, res: Response, next: NextFunction) => {
         const result = validationResult(req);
 
         if (!result.isEmpty()) {
@@ -21,270 +27,197 @@ export class OrderController {
         const { storeId } = req.params;
 
         if (!storeId) {
-            return next(createHttpError(404, "Product not found"));
+            return next(createHttpError(404, "Order not found"));
         }
 
         try {
-            const newOrder = await this.orderService.createOrder(req.body);
+            const orderId = uuidv4();
+            const newOrder = await this.orderService.createOrder({
+                ...req.body,
+                orderId,
+            });
 
             this.logger.info("Order created", { id: newOrder?._id });
 
-            res.status(200).json({ order: newOrder?._id });
+            res.status(200).json({ id: newOrder?._id });
         } catch (err) {
             next(err);
             return;
         }
     };
 
-    // getAll = async (req: StoreRequest, res: Response, next: NextFunction) => {
-    //     const { storeId } = req.params;
-    //     const { pageIndex = 1, pageSize = 10 } = req.query;
+    getAll = async (req: StoreRequest, res: Response, next: NextFunction) => {
+        const { storeId } = req.params;
+        const { pageIndex = 1, pageSize = 5 } = req.query;
 
-    //     if (!storeId) {
-    //         return next(createHttpError(400, "Store id is required"));
-    //     }
+        if (!storeId) {
+            return next(createHttpError(400, "Store id is required"));
+        }
 
-    //     const objectStoreId = new mongoose.Types.ObjectId(storeId);
+        const orders = await this.orderService.getOrders(
+            {
+                storeId,
+            },
+            { pageIndex: Number(pageIndex), pageSize: Number(pageSize) },
+        );
 
-    //     const products = await this.productService.getProducts(
-    //         {
-    //             storeId: objectStoreId,
-    //         },
-    //         { pageIndex: Number(pageIndex), pageSize: Number(pageSize) },
-    //     );
+        const totalDocs = await this.orderService.ordersCount(storeId);
 
-    //     const totalDocs = await this.productService.productCount(objectStoreId);
+        if (!orders) {
+            return next(createHttpError(404, "Orders not found"));
+        }
 
-    //     if (!products) {
-    //         return next(createHttpError(404, "Product not found"));
-    //     }
+        const ordersDocuments = {
+            orders,
+            totalDocs,
+            pageIndex: Number(pageIndex),
+            pageSize: Number(pageSize),
+            pageCount: Math.ceil(totalDocs / Number(pageSize)),
+        };
 
-    //     const finalProducts = await Promise.all(
-    //         (products as ProductI[]).map(async (product: ProductI) => {
-    //             const imageFile = await this.storage.getObjectUri(
-    //                 product?.imageFile as string,
-    //             );
-    //             return {
-    //                 ...product,
-    //                 imageFile,
-    //             };
-    //         }),
-    //     );
+        return res.json({
+            ...ordersDocuments,
+        });
+    };
 
-    //     const productsDocuments = {
-    //         products: finalProducts,
-    //         totalDocs,
-    //         pageIndex: Number(pageIndex),
-    //         pageSize: Number(pageSize),
-    //         pageCount: Math.ceil(totalDocs / Number(pageSize)),
-    //     };
+    getOne = async (req: OrderRequest, res: Response, next: NextFunction) => {
+        if (!req.params?.orderId || !req.params._id) {
+            return next(createHttpError(400, "Order id is required"));
+        }
 
-    //     return res.json({
-    //         ...productsDocuments,
-    //     });
-    // };
+        const { orderId } = req.params;
 
-    // getOne = async (req: ProductRequest, res: Response, next: NextFunction) => {
-    //     if (!req.params?.productId) {
-    //         return next(createHttpError(400, "Product id is required"));
-    //     }
+        if (!orderId) {
+            return next(createHttpError(400, "Missing orderId"));
+        }
 
-    //     const { productId } = req.params;
+        try {
+            const order = await this.orderService.getOrder(orderId);
 
-    //     if (!productId) {
-    //         return next(createHttpError(400, "Missing productId"));
-    //     }
+            return res.json({ order });
+        } catch (error) {
+            next(createHttpError(500, "Internal error"));
+        }
+    };
 
-    //     try {
-    //         const productWithImageId =
-    //             await this.productService.getProduct(productId);
+    update = async (req: OrderRequestI, res: Response, next: NextFunction) => {
+        const result = validationResult(req);
 
-    //         const imageFile = await this.storage.getObjectUri(
-    //             productWithImageId?.imageFile as string,
-    //         );
+        if (!result.isEmpty()) {
+            return res.status(400).json({ errors: result.array() });
+        }
 
-    //         const product = {
-    //             ...productWithImageId,
-    //             imageFile,
-    //         };
+        const { storeId, orderId } = req.params;
 
-    //         return res.json({ product });
-    //     } catch (error) {
-    //         next(createHttpError(500, "Internal error"));
-    //     }
-    // };
+        if (!storeId) {
+            return next(createHttpError(404, "Store not exists"));
+        }
 
-    // update = async (
-    //     req: CreateProductRequest,
-    //     res: Response,
-    //     next: NextFunction,
-    // ) => {
-    //     const result = validationResult(req);
+        if (!orderId) {
+            return next(createHttpError(404, "Order not exists"));
+        }
 
-    //     if (!result.isEmpty()) {
-    //         return res.status(400).json({ errors: result.array() });
-    //     }
+        try {
+            const existingOrder = await this.orderService.getOrder(orderId);
 
-    //     const { storeId, productId } = req.params;
+            if (!existingOrder) {
+                return next(createHttpError(404, "Order not found"));
+            }
 
-    //     if (!storeId) {
-    //         return next(createHttpError(404, "Store not exists"));
-    //     }
+            if (existingOrder.orderId !== storeId) {
+                return next(createHttpError(403, "Forbidden for this order"));
+            }
 
-    //     try {
-    //         const existingProduct =
-    //             await this.productService.getProduct(productId);
+            const order = await this.orderService.updateOrder(
+                orderId,
+                req.body,
+            );
 
-    //         if (!existingProduct) {
-    //             return next(createHttpError(404, "Product not found"));
-    //         }
+            this.logger.info(`Order updated with ${order ? order.id : null}`);
 
-    //         if (existingProduct.storeId.toString() !== storeId) {
-    //             return next(createHttpError(403, "Forbidden for this product"));
-    //         }
+            res.json({ id: existingOrder._id });
+        } catch (err) {
+            next(err);
+            return;
+        }
+    };
 
-    //         let newImage: string | undefined;
-    //         let oldImage: string | undefined;
+    destroy = async (req: OrderRequest, res: Response, next: NextFunction) => {
+        const result = validationResult(req);
 
-    //         if (req?.file) {
-    //             oldImage = existingProduct.imageFile;
+        if (!result.isEmpty()) {
+            return res.status(400).json({ errors: result.array() });
+        }
 
-    //             const image = req?.file as Express.Multer.File;
-    //             const imageName = uuidv4();
+        if (!req.params.storeId) {
+            return next(createHttpError(400, "Store id is required"));
+        }
 
-    //             const imageRes = (await this.storage.upload({
-    //                 fileData: image.buffer,
-    //                 filename: imageName,
-    //                 fileMimeType: image.mimetype,
-    //             })) as UploadApiResponse;
+        if (!req.params.orderId) {
+            return next(createHttpError(400, "Missing order is required"));
+        }
 
-    //             if (oldImage && imageRes?.public_id) {
-    //                 newImage = imageRes.public_id;
+        try {
+            const { orderId, storeId } = req.params;
 
-    //                 await this.storage.delete(oldImage);
-    //             }
-    //         }
+            const existingOrder = await this.orderService.getOrder(orderId);
 
-    //         oldImage = existingProduct.imageFile;
+            if (!existingOrder) {
+                return next(createHttpError(404, "Order not found"));
+            }
 
-    //         const { properties } = req.body;
+            if (existingOrder.storeId !== storeId) {
+                return next(createHttpError(403, "Forbidden for this order"));
+            }
 
-    //         const isPropertyValueCorrect = properties.every((prop) =>
-    //             (prop.value as string).includes(","),
-    //         );
-    //         if (!isPropertyValueCorrect) {
-    //             return next(
-    //                 createHttpError(
-    //                     400,
-    //                     `please include "," for every new value property`,
-    //                 ),
-    //             );
-    //         }
+            const order = await this.orderService.deleteById(orderId);
 
-    //         const formattedProperty = req.body.properties.map((prop) => ({
-    //             name: prop.name,
-    //             value: (prop.value as string).split(","),
-    //         }));
+            this.logger.info(`Delete order by Id`, { id: order._id });
 
-    //         const product: ProductI = {
-    //             ...req.body,
-    //             properties: formattedProperty,
-    //             imageFile: newImage ? newImage : oldImage,
-    //         };
+            res.json({ id: order._id });
+        } catch (err) {
+            next(err);
+            return;
+        }
+    };
 
-    //         await this.productService.updateProduct(productId, product);
+    bulkDestroy = async (
+        req: DeleteBulkRequest,
+        res: Response,
+        next: NextFunction,
+    ) => {
+        const result = validationResult(req);
 
-    //         this.logger.info(`Product created with ${product.name}`);
+        if (!result.isEmpty()) {
+            return res.status(400).json({ errors: result.array() });
+        }
 
-    //         res.json({ id: existingProduct._id });
-    //     } catch (err) {
-    //         next(err);
-    //         return;
-    //     }
-    // };
+        if (!req.params.storeId) {
+            return next(createHttpError(400, "Store id is required"));
+        }
 
-    // destroy = async (req: StoreRequest, res: Response, next: NextFunction) => {
-    //     const result = validationResult(req);
+        try {
+            const { storeId } = req.params;
 
-    //     if (!result.isEmpty()) {
-    //         return res.status(400).json({ errors: result.array() });
-    //     }
+            const { deleteResult, orders } = await this.orderService.bulkDelete(
+                req.body,
+                storeId,
+            );
 
-    //     if (!req.params.storeId) {
-    //         return next(createHttpError(400, "Store id is required"));
-    //     }
+            const ids = orders.map((order) => order._id);
 
-    //     if (!req.params.productId) {
-    //         return next(createHttpError(400, "Product id is required"));
-    //     }
+            this.logger.info(`Delete Bulk orders by Ids`, {
+                ids,
+            });
 
-    //     try {
-    //         const { productId, storeId } = req.params;
-
-    //         const existingProduct =
-    //             await this.productService.getProduct(productId);
-
-    //         if (!existingProduct) {
-    //             return next(createHttpError(404, "Product not found"));
-    //         }
-
-    //         if (existingProduct.storeId.toString() !== storeId) {
-    //             return next(createHttpError(403, "Forbidden for this product"));
-    //         }
-
-    //         const product = await this.productService.deleteById(productId);
-
-    //         await this.storage.delete(`${product.imageFile}`);
-
-    //         this.logger.info(`Delete product by Id`, { id: product._id });
-
-    //         res.json({ id: product._id });
-    //     } catch (err) {
-    //         next(err);
-    //         return;
-    //     }
-    // };
-
-    // bulkDestroy = async (
-    //     req: DeleteBulkProductRequest,
-    //     res: Response,
-    //     next: NextFunction,
-    // ) => {
-    //     const result = validationResult(req);
-
-    //     if (!result.isEmpty()) {
-    //         return res.status(400).json({ errors: result.array() });
-    //     }
-
-    //     if (!req.params.storeId) {
-    //         return next(createHttpError(400, "Store id is required"));
-    //     }
-
-    //     try {
-    //         const { storeId } = req.params;
-
-    //         const { deleteResult, products } =
-    //             await this.productService.bulkDelete(req.body, storeId);
-
-    //         const deleteImagePromises = products.map((product) =>
-    //             this.storage.delete(product.imageFile),
-    //         );
-    //         await Promise.all(deleteImagePromises);
-
-    //         const ids = products.map((product) => product._id);
-
-    //         this.logger.info(`Delete Bulk products by Ids`, {
-    //             ids,
-    //         });
-
-    //         res.json({
-    //             ids,
-    //             deletedCount: deleteResult.deletedCount,
-    //             success: deleteResult.acknowledged,
-    //         });
-    //     } catch (err) {
-    //         next(err);
-    //         return;
-    //     }
-    // };
+            res.json({
+                ids,
+                deletedCount: deleteResult.deletedCount,
+                success: deleteResult.acknowledged,
+            });
+        } catch (err) {
+            next(err);
+            return;
+        }
+    };
 }

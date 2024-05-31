@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 import UserModel from "../model/user";
-import { CreateUserT, UserI } from "../types/index";
+import { CreateUserT, Filter, UserI } from "../types/index";
 
 export class UserService {
     async create(user: CreateUserT) {
@@ -27,9 +27,52 @@ export class UserService {
         );
     }
 
-    async findByStoreId(storeId: string): Promise<UserI[]> {
-        return (await UserModel.find({})
-            .sort({ desc: -1 })
-            .select(["-password"])) as UserI[];
+    async findByStoreId({
+        pageIndex = 1,
+        pageSize = 10,
+    }: Filter): Promise<UserI[]> {
+        const matchQuery: Filter = {};
+
+        const skip = (pageIndex - 1) * pageSize;
+
+        const users = await UserModel.aggregate<UserI>([
+            {
+                $match: matchQuery,
+            },
+            {
+                $sort: { createdAt: 1 },
+            },
+            {
+                $skip: skip,
+            },
+            {
+                $limit: pageSize,
+            },
+            {
+                $lookup: {
+                    from: "stores", // Replace with your actual stores collection name
+                    localField: "storeId",
+                    foreignField: "_id",
+                    as: "storeDetails",
+                },
+            },
+            {
+                $project: {
+                    _id: 1,
+                    email: 1,
+                    firstName: 1,
+                    lastName: 1,
+                    role: 1,
+                    storeDetails: 1,
+                    createdAt: 1,
+                },
+            },
+        ]).exec();
+
+        return users;
+    }
+
+    async userCount(storeId?: mongoose.Types.ObjectId): Promise<number> {
+        return (await UserModel.countDocuments({})) as number;
     }
 }

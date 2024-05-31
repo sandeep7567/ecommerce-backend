@@ -1,5 +1,6 @@
 import express from "express";
 
+import { param } from "express-validator";
 import multer from "multer";
 import logger from "../config/logger";
 import { ProductController } from "../controllers/ProductController";
@@ -8,10 +9,9 @@ import authenticator from "../middlewares/authenticator";
 import { storeByUserIdCheck } from "../middlewares/storeByUserIdCheck";
 import { ProductService } from "../services/productService";
 import { CloudinaryStorage } from "../storage/cloudinaryStorage";
-import bulkDeleteProductValidator from "../validators/bulkDeleteProductValidator";
+import bulkDeleteValidator from "../validators/bulkDeleteValidator";
 import createProductValidator from "../validators/createProductValidator";
 import updateProductValidator from "../validators/updateProductValidator";
-import { param } from "express-validator";
 
 const memoryStorage = multer.memoryStorage();
 const upload = multer({
@@ -72,7 +72,7 @@ router.post(
     "/:storeId/bulk-delete",
     authenticator,
     storeByUserIdCheck,
-    bulkDeleteProductValidator,
+    bulkDeleteValidator,
     asyncHandler(productController.bulkDestroy),
 );
 

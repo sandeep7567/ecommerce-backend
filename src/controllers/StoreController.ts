@@ -3,16 +3,16 @@ import { Logger } from "winston";
 
 // import { Roles } from "../constants";
 import { validationResult } from "express-validator";
+import createHttpError from "http-errors";
+import mongoose from "mongoose";
 import { StoreService } from "../services/storeService";
+import { UserService } from "../services/userService";
 import {
     AuthRequest,
     CreateStoreRequest,
     StoreI,
     StoreRequest,
 } from "../types";
-import createHttpError from "http-errors";
-import mongoose from "mongoose";
-import { UserService } from "../services/userService";
 
 export class StoreController {
     constructor(
