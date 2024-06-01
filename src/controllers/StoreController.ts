@@ -10,6 +10,7 @@ import { UserService } from "../services/userService";
 import {
     AuthRequest,
     CreateStoreRequest,
+    Filter,
     StoreI,
     StoreRequest,
 } from "../types";
@@ -52,8 +53,25 @@ export class StoreController {
     };
 
     getAll = async (req: StoreRequest, res: Response, next: NextFunction) => {
+        const userId = req.query.userId;
+        const pageIndex: number = req.query.pageIndex
+            ? Number(req.query.pageIndex)
+            : 1;
+        const pageSize: number = req.query.pageSize
+            ? Number(req.query.pageSize)
+            : 10;
+
+        const filter: Filter = {};
+
+        if (userId && mongoose.Types.ObjectId.isValid(String(userId))) {
+            filter.userId = new mongoose.Types.ObjectId(String(userId));
+        }
+
         try {
-            const stores = await this.storeService.getStore();
+            const stores = await this.storeService.getStore(filter, {
+                pageIndex,
+                pageSize,
+            });
 
             if (!stores) {
                 next(createHttpError(404, "Store not found"));

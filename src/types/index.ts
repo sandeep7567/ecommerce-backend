@@ -125,6 +125,7 @@ export interface PaginationFilter {
 }
 
 export interface Filter extends PaginationFilter {
+    userId?: mongoose.Types.ObjectId;
     storeId?: mongoose.Types.ObjectId;
     orderId?: mongoose.Types.ObjectId;
 }

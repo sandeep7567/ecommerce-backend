@@ -1,5 +1,5 @@
 import StoreModel from "../model/store";
-import { IStore, OrderSchemaI, StoreI } from "../types";
+import { Filter, IStore, OrderSchemaI, StoreI } from "../types";
 
 export class StoreService {
     constructor() {}
@@ -10,8 +10,36 @@ export class StoreService {
         return await newStore.save();
     }
 
-    async getStore() {
-        return await StoreModel.find({});
+    async getStore(filters: Filter, { pageIndex = 1, pageSize = 10 }: Filter) {
+        const matchQuery: Filter = {
+            ...filters,
+        };
+
+        const skip = (pageIndex - 1) * pageSize;
+
+        return await StoreModel.aggregate<StoreI>([
+            {
+                $match: matchQuery,
+            },
+            {
+                $sort: { createdAt: 1 },
+            },
+            {
+                $skip: skip,
+            },
+            {
+                $limit: pageSize,
+            },
+            {
+                $project: {
+                    _id: 1,
+                    userId: 1,
+                    name: 1,
+                    createdAt: 1,
+                    updatedAt: 1,
+                },
+            },
+        ]).exec();
     }
 
     async getStoreById(_id: string): Promise<OrderSchemaI | null> {
