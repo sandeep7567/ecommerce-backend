@@ -104,7 +104,7 @@ export interface CreateProductRequest extends Request {
     body: ProductI;
 }
 export interface OrderRequestI extends Request {
-    body: OrderSchemaI;
+    body: OrderI;
 }
 
 export interface BulkIdsIds {
@@ -125,14 +125,25 @@ export interface PaginationFilter {
 }
 
 export interface Filter extends PaginationFilter {
-    storeId?: mongoose.Types.ObjectId | string;
-    orderId?: mongoose.Types.ObjectId | string;
+    storeId?: mongoose.Types.ObjectId;
+    orderId?: mongoose.Types.ObjectId;
 }
 
 export type OrderStatus = keyof typeof DELIVERY_STATUS;
-export interface OrderProductData {
-    productId: string; // Reference to Product collection
-    productName: string;
+export interface OrderItemsSchema {
+    productId: mongoose.Schema.Types.ObjectId;
+    name: string;
+    imageFile: string;
+    selectedProperty: Record<string, string>;
+    qty: number;
+    price: number;
+}
+
+export interface OrderItemsI {
+    productId: mongoose.Schema.Types.ObjectId;
+    name: string;
+    image: string;
+    property: Record<string, string>;
     qty: number;
     price: number;
 }
@@ -145,20 +156,22 @@ export enum STATUS {
 }
 
 export interface OrderSchemaI extends Document {
-    productInfo: OrderProductData[];
-    orderId: string;
-    storeId: string | null;
-    userId: string | undefined;
+    orderItems: OrderItemsSchema[];
+    userInfo: Pick<UserI, "firstName" | "lastName" | "email">;
+    userId: mongoose.Schema.Types.ObjectId;
+    storeId: mongoose.Schema.Types.ObjectId;
+    address: string;
     totalAmount: number;
+    totalQty: number;
     purchaseAt: Date;
     status: STATUS;
 }
+
 export interface OrderI {
-    productInfo: OrderProductData[];
-    orderId: string;
-    storeId: string | null;
-    userId: string | undefined;
+    orderItems: OrderItemsI[];
+    userId: string;
+    storeId: string;
+    address: string;
     totalAmount: number;
-    purchaseAt: Date;
-    status: STATUS;
+    totalQty: number;
 }

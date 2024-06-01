@@ -4,17 +4,18 @@ import { OrderController } from "../controllers/OrderController";
 import { asyncHandler } from "../middlewares/asyncHandler";
 import authenticator from "../middlewares/authenticator";
 
-import { OrderService } from "../services/orderService";
-import { createOrderValidator } from "../validators/createOrderValidator";
 import { param } from "express-validator";
 import { storeByUserIdCheck } from "../middlewares/storeByUserIdCheck";
-import bulkDeleteProductValidator from "../validators/bulkDeleteValidator";
+import { OrderService } from "../services/orderService";
 import bulkDeleteValidator from "../validators/bulkDeleteValidator";
+import { createOrderValidator } from "../validators/createOrderValidator";
+import { StoreService } from "../services/storeService";
 
 const router = express.Router();
 
+const storeService = new StoreService();
 const orderService = new OrderService();
-const orderController = new OrderController(orderService, logger);
+const orderController = new OrderController(orderService, storeService, logger);
 
 router.post(
     "/:storeId",

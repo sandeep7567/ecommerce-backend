@@ -1,19 +1,21 @@
+import mongoose from "mongoose";
 import { NextFunction, Response } from "express";
 import { validationResult } from "express-validator";
 import createHttpError from "http-errors";
-import { v4 as uuidv4 } from "uuid";
 import { Logger } from "winston";
+import { StoreService } from "./../services/storeService";
+import { OrderService } from "./../services/orderService";
 import {
     DeleteBulkRequest,
     OrderRequest,
     OrderRequestI,
     StoreRequest,
 } from "../types";
-import { OrderService } from "./../services/orderService";
 
 export class OrderController {
     constructor(
         private orderService: OrderService,
+        private storeService: StoreService,
         private logger: Logger,
     ) {}
 
@@ -24,22 +26,26 @@ export class OrderController {
             return res.status(400).json({ errors: result.array() });
         }
 
-        const { storeId } = req.params;
+        if (!req?.params?.storeId || typeof req?.params?.storeId !== "string") {
+            return next(createHttpError(404, "Store Id not found"));
+        }
 
-        if (!storeId) {
+        const { storeId } = req.params;
+        const store = await this.storeService.getStoreById(storeId);
+
+        if (!store) {
             return next(createHttpError(404, "Order not found"));
         }
 
         try {
-            const orderId = uuidv4();
             const newOrder = await this.orderService.createOrder({
                 ...req.body,
-                orderId,
+                storeId,
             });
 
             this.logger.info("Order created", { id: newOrder?._id });
 
-            res.status(200).json({ id: newOrder?._id });
+            res.status(201).json({ id: newOrder?._id });
         } catch (err) {
             next(err);
             return;
@@ -56,7 +62,7 @@ export class OrderController {
 
         const orders = await this.orderService.getOrders(
             {
-                storeId,
+                storeId: new mongoose.Types.ObjectId(storeId),
             },
             { pageIndex: Number(pageIndex), pageSize: Number(pageSize) },
         );
@@ -124,16 +130,16 @@ export class OrderController {
                 return next(createHttpError(404, "Order not found"));
             }
 
-            if (existingOrder.orderId !== storeId) {
+            if (String(existingOrder.storeId) !== storeId) {
                 return next(createHttpError(403, "Forbidden for this order"));
             }
 
-            const order = await this.orderService.updateOrder(
-                orderId,
-                req.body,
-            );
+            // const order = await this.orderService.updateOrder(
+            //     orderId,
+            //     req.body,
+            // );
 
-            this.logger.info(`Order updated with ${order ? order.id : null}`);
+            this.logger.info(`Order updated with`);
 
             res.json({ id: existingOrder._id });
         } catch (err) {
@@ -166,7 +172,7 @@ export class OrderController {
                 return next(createHttpError(404, "Order not found"));
             }
 
-            if (existingOrder.storeId !== storeId) {
+            if (String(existingOrder.storeId) !== storeId) {
                 return next(createHttpError(403, "Forbidden for this order"));
             }
 

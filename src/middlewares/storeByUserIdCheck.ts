@@ -10,6 +10,7 @@ export const storeByUserIdCheck = async (
 ) => {
     try {
         const { storeId } = req.params;
+
         if (!storeId) {
             return next(createHttpError(404, "store not found!"));
         }

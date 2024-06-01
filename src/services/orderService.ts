@@ -72,13 +72,13 @@ export class OrderService {
             {
                 $project: {
                     _id: 1,
-                    productInfo: 1,
-                    orderId: 1,
-                    storeId: 1,
-                    userId: 1,
+                    userInfo: 1,
+                    orderItems: 1,
                     totalAmount: 1,
+                    totalQty: 1,
                     purchaseAt: 1,
                     status: 1,
+                    address: 1,
                     createdAt: 1,
                     updatedAt: 1,
                 },

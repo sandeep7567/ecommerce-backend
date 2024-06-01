@@ -1,6 +1,5 @@
-import mongoose from "mongoose";
 import StoreModel from "../model/store";
-import { IStore, StoreI } from "../types";
+import { IStore, OrderSchemaI, StoreI } from "../types";
 
 export class StoreService {
     constructor() {}
@@ -13,6 +12,10 @@ export class StoreService {
 
     async getStore() {
         return await StoreModel.find({});
+    }
+
+    async getStoreById(_id: string): Promise<OrderSchemaI | null> {
+        return await StoreModel.findOne({ _id });
     }
 
     async updateById(store: Pick<StoreI, "_id" | "name" | "userId">) {
