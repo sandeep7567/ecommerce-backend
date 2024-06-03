@@ -14,6 +14,7 @@ import {
     LoginUserRequest,
     Roles,
 } from "../types";
+import { Config } from "../config";
 
 export class AuthController {
     constructor(
@@ -78,17 +79,19 @@ export class AuthController {
             });
 
             res.cookie("accessToken", accessToken, {
-                domain: "localhost",
+                // domain: "localhost",
                 sameSite: "strict",
                 maxAge: 1000 * 60 * 60, // 1hr
                 httpOnly: true,
+                secure: Config.PRODUCTION !== "production" ? false : true,
             });
 
             res.cookie("refreshToken", refreshToken, {
-                domain: "localhost",
+                // domain: "localhost",
                 sameSite: "strict",
                 maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year
                 httpOnly: true,
+                secure: Config.PRODUCTION !== "production" ? false : true,
             });
 
             this.logger.info("User has been register!", {
@@ -166,17 +169,19 @@ export class AuthController {
             });
 
             res.cookie("accessToken", accessToken, {
-                domain: "localhost",
+                // domain: "localhost",
                 sameSite: "strict",
                 maxAge: 1000 * 60 * 60, // 1hr
                 httpOnly: true,
+                secure: Config.PRODUCTION !== "production" ? false : true,
             });
 
             res.cookie("refreshToken", refreshToken, {
-                domain: "localhost",
+                // domain: "localhost",
                 sameSite: "strict",
                 maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year
                 httpOnly: true,
+                secure: Config.PRODUCTION !== "production" ? false : true,
             });
 
             this.logger.info("User has been login", { id: user.id });
@@ -243,17 +248,19 @@ export class AuthController {
             });
 
             res.cookie("accessToken", accessToken, {
-                domain: "localhost",
+                // domain: "localhost",
                 sameSite: "strict",
                 maxAge: 1000 * 60 * 60, // 1hr
                 httpOnly: true,
+                secure: Config.PRODUCTION !== "production" ? false : true,
             });
 
             res.cookie("refreshToken", refreshToken, {
-                domain: "localhost",
+                // domain: "localhost",
                 sameSite: "strict",
                 maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year
                 httpOnly: true,
+                secure: Config.PRODUCTION !== "production" ? false : true,
             });
 
             this.logger.info("User has been login", { id: user._id });

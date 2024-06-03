@@ -16,6 +16,7 @@ const {
     CLOUDINARY_API_KEY,
     CLOUDINARY_API_SECRET,
     CLOUDINARY_CLOUD_NAME,
+    PRODUCTION,
 } = process.env;
 
 export const Config = {
@@ -29,6 +30,7 @@ export const Config = {
     CLOUDINARY_API_KEY,
     CLOUDINARY_API_SECRET,
     CLOUDINARY_CLOUD_NAME,
+    PRODUCTION,
 };
 
 Object.freeze(Config);
