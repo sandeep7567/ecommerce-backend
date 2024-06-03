@@ -9,13 +9,11 @@ import storeRouter from "./routes/store";
 import productRouter from "./routes/product";
 import orderRouter from "./routes/order";
 
-import { Config } from "./config";
-
 const app = express();
 
 app.use(
     cors({
-        origin: [Config.ORIGIN_URI1!, Config.ORIGIN_URI2!, "*"],
+        origin: "*",
         credentials: true,
     }),
 );
