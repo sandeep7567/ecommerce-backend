@@ -79,27 +79,30 @@ export class AuthController {
             });
 
             res.cookie("accessToken", accessToken, {
-                // domain:
-                //     Config.PRODUCTION !== "production"
-                //         ? "localhost"
-                //         : ".vercel.app",
-                sameSite: "none",
+                // provide production backend url as domain
+                domain:
+                    Config.PRODUCTION === "production"
+                        ? Config.BACKEND_PROD_URI
+                        : "localhost",
+                sameSite:
+                    Config.PRODUCTION === "production" ? "none" : "strict",
                 path: "/",
                 maxAge: 1000 * 60 * 60, // 1hr
                 httpOnly: true,
-                secure: Config.PRODUCTION !== "production" ? false : true,
+                secure: Config.PRODUCTION === "production" ? true : false,
             });
 
             res.cookie("refreshToken", refreshToken, {
-                // domain:
-                //     Config.PRODUCTION !== "production"
-                //         ? "localhost"
-                //         : ".vercel.app",
-                sameSite: "none",
+                domain:
+                    Config.PRODUCTION === "production"
+                        ? Config.BACKEND_PROD_URI
+                        : "localhost",
+                sameSite:
+                    Config.PRODUCTION === "production" ? "none" : "strict",
                 path: "/",
                 maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year
                 httpOnly: true,
-                secure: Config.PRODUCTION !== "production" ? false : true,
+                secure: Config.PRODUCTION === "production" ? true : false,
             });
 
             this.logger.info("User has been register!", {
@@ -177,27 +180,29 @@ export class AuthController {
             });
 
             res.cookie("accessToken", accessToken, {
-                // domain:
-                //     Config.PRODUCTION !== "production"
-                //         ? "localhost"
-                //         : "localhost",
-                sameSite: "none",
+                domain:
+                    Config.PRODUCTION === "production"
+                        ? Config.BACKEND_PROD_URI
+                        : "localhost",
+                sameSite:
+                    Config.PRODUCTION === "production" ? "none" : "strict",
                 path: "/",
                 maxAge: 1000 * 60 * 60, // 1hr
                 httpOnly: true,
-                secure: Config.PRODUCTION !== "production" ? false : true,
+                secure: Config.PRODUCTION === "production" ? true : false,
             });
 
             res.cookie("refreshToken", refreshToken, {
-                // domain:
-                //     Config.PRODUCTION !== "production"
-                //         ? "localhost"
-                //         : ".vercel.app",
-                sameSite: "none",
+                domain:
+                    Config.PRODUCTION === "production"
+                        ? Config.BACKEND_PROD_URI
+                        : "localhost",
+                sameSite:
+                    Config.PRODUCTION === "production" ? "none" : "strict",
                 path: "/",
                 maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year
                 httpOnly: true,
-                secure: Config.PRODUCTION !== "production" ? false : true,
+                secure: Config.PRODUCTION === "production" ? true : false,
             });
 
             this.logger.info("User has been login", { id: user.id });
@@ -264,27 +269,29 @@ export class AuthController {
             });
 
             res.cookie("accessToken", accessToken, {
-                // domain:
-                //     Config.PRODUCTION !== "production"
-                //         ? "localhost"
-                //         : ".vercel.app",
-                sameSite: "none",
+                domain:
+                    Config.PRODUCTION === "production"
+                        ? Config.BACKEND_PROD_URI
+                        : "localhost",
+                sameSite:
+                    Config.PRODUCTION === "production" ? "none" : "strict",
                 path: "/",
                 maxAge: 1000 * 60 * 60, // 1hr
                 httpOnly: true,
-                secure: Config.PRODUCTION !== "production" ? false : true,
+                secure: Config.PRODUCTION === "production" ? true : false,
             });
 
             res.cookie("refreshToken", refreshToken, {
-                // domain:
-                //     Config.PRODUCTION !== "production"
-                //         ? "localhost"
-                //         : ".vercel.app",
-                sameSite: "none",
+                domain:
+                    Config.PRODUCTION === "production"
+                        ? Config.BACKEND_PROD_URI
+                        : "localhost",
+                sameSite:
+                    Config.PRODUCTION === "production" ? "none" : "strict",
                 path: "/",
                 maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year
                 httpOnly: true,
-                secure: Config.PRODUCTION !== "production" ? false : true,
+                secure: Config.PRODUCTION === "production" ? true : false,
             });
 
             this.logger.info("User has been login", { id: user._id });
@@ -306,27 +313,29 @@ export class AuthController {
             this.logger.info("User has been logged out", { id: sub });
 
             res.clearCookie("accessToken", {
-                // domain:
-                //     Config.PRODUCTION !== "production"
-                //         ? "localhost"
-                //         : ".vercel.app",
-                sameSite: "none",
+                domain:
+                    Config.PRODUCTION === "production"
+                        ? Config.BACKEND_PROD_URI
+                        : "localhost",
+                sameSite:
+                    Config.PRODUCTION === "production" ? "none" : "strict",
                 path: "/", // Ensure path is set correctly
                 maxAge: 0,
                 httpOnly: true,
-                secure: Config.PRODUCTION !== "production" ? false : true,
+                secure: Config.PRODUCTION === "production" ? true : false,
             });
 
             res.clearCookie("refreshToken", {
-                // domain:
-                //     Config.PRODUCTION !== "production"
-                //         ? "localhost"
-                //         : ".vercel.app",
-                sameSite: "none",
+                domain:
+                    Config.PRODUCTION === "production"
+                        ? Config.BACKEND_PROD_URI
+                        : "localhost",
+                sameSite:
+                    Config.PRODUCTION === "production" ? "none" : "strict",
                 path: "/", // Ensure path is set correctly
                 maxAge: 0,
                 httpOnly: true,
-                secure: Config.PRODUCTION !== "production" ? false : true,
+                secure: Config.PRODUCTION === "production" ? true : false,
             });
             res.status(200).json({});
         } catch (err) {

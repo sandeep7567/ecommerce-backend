@@ -17,6 +17,7 @@ const {
     CLOUDINARY_API_SECRET,
     CLOUDINARY_CLOUD_NAME,
     PRODUCTION,
+    BACKEND_PROD_URI,
 } = process.env;
 
 export const Config = {
@@ -31,6 +32,7 @@ export const Config = {
     CLOUDINARY_API_SECRET,
     CLOUDINARY_CLOUD_NAME,
     PRODUCTION,
+    BACKEND_PROD_URI,
 };
 
 Object.freeze(Config);
