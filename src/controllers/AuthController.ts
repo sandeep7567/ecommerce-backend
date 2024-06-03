@@ -79,14 +79,24 @@ export class AuthController {
             });
 
             res.cookie("accessToken", accessToken, {
+                domain:
+                    Config.PRODUCTION !== "production"
+                        ? "localhost"
+                        : "vercel.app",
                 sameSite: "none",
+                path: "/",
                 maxAge: 1000 * 60 * 60, // 1hr
                 httpOnly: true,
                 secure: Config.PRODUCTION !== "production" ? false : true,
             });
 
             res.cookie("refreshToken", refreshToken, {
+                domain:
+                    Config.PRODUCTION !== "production"
+                        ? "localhost"
+                        : "vercel.app",
                 sameSite: "none",
+                path: "/",
                 maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year
                 httpOnly: true,
                 secure: Config.PRODUCTION !== "production" ? false : true,
@@ -167,16 +177,24 @@ export class AuthController {
             });
 
             res.cookie("accessToken", accessToken, {
-                // domain: "localhost",
+                domain:
+                    Config.PRODUCTION !== "production"
+                        ? "localhost"
+                        : "vercel.app",
                 sameSite: "none",
+                path: "/",
                 maxAge: 1000 * 60 * 60, // 1hr
                 httpOnly: true,
                 secure: Config.PRODUCTION !== "production" ? false : true,
             });
 
             res.cookie("refreshToken", refreshToken, {
-                // domain: "localhost",
+                domain:
+                    Config.PRODUCTION !== "production"
+                        ? "localhost"
+                        : "vercel.app",
                 sameSite: "none",
+                path: "/",
                 maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year
                 httpOnly: true,
                 secure: Config.PRODUCTION !== "production" ? false : true,
@@ -246,16 +264,24 @@ export class AuthController {
             });
 
             res.cookie("accessToken", accessToken, {
-                // domain: "localhost",
+                domain:
+                    Config.PRODUCTION !== "production"
+                        ? "localhost"
+                        : "vercel.app",
                 sameSite: "none",
+                path: "/",
                 maxAge: 1000 * 60 * 60, // 1hr
                 httpOnly: true,
                 secure: Config.PRODUCTION !== "production" ? false : true,
             });
 
             res.cookie("refreshToken", refreshToken, {
-                // domain: "localhost",
+                domain:
+                    Config.PRODUCTION !== "production"
+                        ? "localhost"
+                        : "vercel.app",
                 sameSite: "none",
+                path: "/",
                 maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year
                 httpOnly: true,
                 secure: Config.PRODUCTION !== "production" ? false : true,
@@ -279,8 +305,29 @@ export class AuthController {
             });
             this.logger.info("User has been logged out", { id: sub });
 
-            res.clearCookie("refreshToken");
-            res.clearCookie("accessToken");
+            res.clearCookie("accessToken", {
+                domain:
+                    Config.PRODUCTION !== "production"
+                        ? "localhost"
+                        : "vercel.app",
+                sameSite: "none",
+                path: "/", // Ensure path is set correctly
+                maxAge: 0,
+                httpOnly: true,
+                secure: Config.PRODUCTION !== "production" ? false : true,
+            });
+
+            res.clearCookie("refreshToken", {
+                domain:
+                    Config.PRODUCTION !== "production"
+                        ? "localhost"
+                        : "vercel.app",
+                sameSite: "none",
+                path: "/", // Ensure path is set correctly
+                maxAge: 0,
+                httpOnly: true,
+                secure: Config.PRODUCTION !== "production" ? false : true,
+            });
             res.status(200).json({});
         } catch (err) {
             next(err);
