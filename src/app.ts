@@ -15,7 +15,7 @@ const app = express();
 
 app.use(
     cors({
-        origin: [`https://ecommerce-backend-39ar.onrender.com`],
+        origin: [Config.ORIGIN_URI1!, Config.ORIGIN_URI2!, "*"],
         credentials: true,
     }),
 );
