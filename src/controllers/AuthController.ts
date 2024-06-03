@@ -82,7 +82,7 @@ export class AuthController {
                 domain:
                     Config.PRODUCTION !== "production"
                         ? "localhost"
-                        : "vercel.app",
+                        : ".vercel.app",
                 sameSite: "none",
                 path: "/",
                 maxAge: 1000 * 60 * 60, // 1hr
@@ -94,7 +94,7 @@ export class AuthController {
                 domain:
                     Config.PRODUCTION !== "production"
                         ? "localhost"
-                        : "vercel.app",
+                        : ".vercel.app",
                 sameSite: "none",
                 path: "/",
                 maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year
@@ -180,7 +180,7 @@ export class AuthController {
                 domain:
                     Config.PRODUCTION !== "production"
                         ? "localhost"
-                        : "vercel.app",
+                        : ".vercel.app",
                 sameSite: "none",
                 path: "/",
                 maxAge: 1000 * 60 * 60, // 1hr
@@ -192,7 +192,7 @@ export class AuthController {
                 domain:
                     Config.PRODUCTION !== "production"
                         ? "localhost"
-                        : "vercel.app",
+                        : ".vercel.app",
                 sameSite: "none",
                 path: "/",
                 maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year
@@ -267,7 +267,7 @@ export class AuthController {
                 domain:
                     Config.PRODUCTION !== "production"
                         ? "localhost"
-                        : "vercel.app",
+                        : ".vercel.app",
                 sameSite: "none",
                 path: "/",
                 maxAge: 1000 * 60 * 60, // 1hr
@@ -279,7 +279,7 @@ export class AuthController {
                 domain:
                     Config.PRODUCTION !== "production"
                         ? "localhost"
-                        : "vercel.app",
+                        : ".vercel.app",
                 sameSite: "none",
                 path: "/",
                 maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year
@@ -309,7 +309,7 @@ export class AuthController {
                 domain:
                     Config.PRODUCTION !== "production"
                         ? "localhost"
-                        : "vercel.app",
+                        : ".vercel.app",
                 sameSite: "none",
                 path: "/", // Ensure path is set correctly
                 maxAge: 0,
@@ -321,7 +321,7 @@ export class AuthController {
                 domain:
                     Config.PRODUCTION !== "production"
                         ? "localhost"
-                        : "vercel.app",
+                        : ".vercel.app",
                 sameSite: "none",
                 path: "/", // Ensure path is set correctly
                 maxAge: 0,
