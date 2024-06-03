@@ -79,14 +79,14 @@ export class AuthController {
             });
 
             res.cookie("accessToken", accessToken, {
-                sameSite: "strict",
+                sameSite: "lax",
                 maxAge: 1000 * 60 * 60, // 1hr
                 httpOnly: true,
                 secure: Config.PRODUCTION !== "production" ? false : true,
             });
 
             res.cookie("refreshToken", refreshToken, {
-                sameSite: "strict",
+                sameSite: "lax",
                 maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year
                 httpOnly: true,
                 secure: Config.PRODUCTION !== "production" ? false : true,
@@ -168,7 +168,7 @@ export class AuthController {
 
             res.cookie("accessToken", accessToken, {
                 // domain: "localhost",
-                sameSite: "strict",
+                sameSite: "lax",
                 maxAge: 1000 * 60 * 60, // 1hr
                 httpOnly: true,
                 secure: Config.PRODUCTION !== "production" ? false : true,
@@ -176,7 +176,7 @@ export class AuthController {
 
             res.cookie("refreshToken", refreshToken, {
                 // domain: "localhost",
-                sameSite: "strict",
+                sameSite: "lax",
                 maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year
                 httpOnly: true,
                 secure: Config.PRODUCTION !== "production" ? false : true,
@@ -247,7 +247,7 @@ export class AuthController {
 
             res.cookie("accessToken", accessToken, {
                 // domain: "localhost",
-                sameSite: "strict",
+                sameSite: "lax",
                 maxAge: 1000 * 60 * 60, // 1hr
                 httpOnly: true,
                 secure: Config.PRODUCTION !== "production" ? false : true,
@@ -255,7 +255,7 @@ export class AuthController {
 
             res.cookie("refreshToken", refreshToken, {
                 // domain: "localhost",
-                sameSite: "strict",
+                sameSite: "lax",
                 maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year
                 httpOnly: true,
                 secure: Config.PRODUCTION !== "production" ? false : true,
