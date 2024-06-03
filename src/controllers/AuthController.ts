@@ -79,10 +79,10 @@ export class AuthController {
             });
 
             res.cookie("accessToken", accessToken, {
-                domain:
-                    Config.PRODUCTION !== "production"
-                        ? "localhost"
-                        : ".vercel.app",
+                // domain:
+                //     Config.PRODUCTION !== "production"
+                //         ? "localhost"
+                //         : ".vercel.app",
                 sameSite: "none",
                 path: "/",
                 maxAge: 1000 * 60 * 60, // 1hr
@@ -91,10 +91,10 @@ export class AuthController {
             });
 
             res.cookie("refreshToken", refreshToken, {
-                domain:
-                    Config.PRODUCTION !== "production"
-                        ? "localhost"
-                        : ".vercel.app",
+                // domain:
+                //     Config.PRODUCTION !== "production"
+                //         ? "localhost"
+                //         : ".vercel.app",
                 sameSite: "none",
                 path: "/",
                 maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year
@@ -177,10 +177,10 @@ export class AuthController {
             });
 
             res.cookie("accessToken", accessToken, {
-                domain:
-                    Config.PRODUCTION !== "production"
-                        ? "localhost"
-                        : ".vercel.app",
+                // domain:
+                //     Config.PRODUCTION !== "production"
+                //         ? "localhost"
+                //         : "localhost",
                 sameSite: "none",
                 path: "/",
                 maxAge: 1000 * 60 * 60, // 1hr
@@ -189,10 +189,10 @@ export class AuthController {
             });
 
             res.cookie("refreshToken", refreshToken, {
-                domain:
-                    Config.PRODUCTION !== "production"
-                        ? "localhost"
-                        : ".vercel.app",
+                // domain:
+                //     Config.PRODUCTION !== "production"
+                //         ? "localhost"
+                //         : ".vercel.app",
                 sameSite: "none",
                 path: "/",
                 maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year
@@ -264,10 +264,10 @@ export class AuthController {
             });
 
             res.cookie("accessToken", accessToken, {
-                domain:
-                    Config.PRODUCTION !== "production"
-                        ? "localhost"
-                        : ".vercel.app",
+                // domain:
+                //     Config.PRODUCTION !== "production"
+                //         ? "localhost"
+                //         : ".vercel.app",
                 sameSite: "none",
                 path: "/",
                 maxAge: 1000 * 60 * 60, // 1hr
@@ -276,10 +276,10 @@ export class AuthController {
             });
 
             res.cookie("refreshToken", refreshToken, {
-                domain:
-                    Config.PRODUCTION !== "production"
-                        ? "localhost"
-                        : ".vercel.app",
+                // domain:
+                //     Config.PRODUCTION !== "production"
+                //         ? "localhost"
+                //         : ".vercel.app",
                 sameSite: "none",
                 path: "/",
                 maxAge: 1000 * 60 * 60 * 24 * 365, // 1 year
@@ -306,10 +306,10 @@ export class AuthController {
             this.logger.info("User has been logged out", { id: sub });
 
             res.clearCookie("accessToken", {
-                domain:
-                    Config.PRODUCTION !== "production"
-                        ? "localhost"
-                        : ".vercel.app",
+                // domain:
+                //     Config.PRODUCTION !== "production"
+                //         ? "localhost"
+                //         : ".vercel.app",
                 sameSite: "none",
                 path: "/", // Ensure path is set correctly
                 maxAge: 0,
@@ -318,10 +318,10 @@ export class AuthController {
             });
 
             res.clearCookie("refreshToken", {
-                domain:
-                    Config.PRODUCTION !== "production"
-                        ? "localhost"
-                        : ".vercel.app",
+                // domain:
+                //     Config.PRODUCTION !== "production"
+                //         ? "localhost"
+                //         : ".vercel.app",
                 sameSite: "none",
                 path: "/", // Ensure path is set correctly
                 maxAge: 0,
